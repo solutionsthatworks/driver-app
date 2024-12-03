@@ -1,0 +1,1152 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"goog",
+				"googleUser"
+			],
+			[
+				"hi",
+				"height"
+			],
+			[
+				"ma",
+				"maxlength"
+			],
+			[
+				"order",
+				"order_status"
+			],
+			[
+				"addr",
+				"address_id"
+			],
+			[
+				"delivr",
+				"delivery_charge"
+			],
+			[
+				"cons",
+				"console"
+			],
+			[
+				"valida",
+				"validateForm"
+			],
+			[
+				"max",
+				"maxlength"
+			],
+			[
+				"sumb",
+				"onsubmit"
+			],
+			[
+				"bord",
+				"border"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"file": "src/pages/Home.js",
+			"settings":
+			{
+				"buffer_size": 201,
+				"encoding": "UTF-8",
+				"line_ending": "Windows"
+			},
+			"undo_stack":
+			[
+				[
+					3,
+					1,
+					"paste",
+					null,
+					"AgAAABsAAAAAAAAAWwAAAAAAAAAAAAAAWwAAAAAAAABbAAAAAAAAACgAAABpbXBvcnQgeyBMaW5rIH0gZnJvbSAncmVhY3Qtcm91dGVyLWRvbSc7",
+					"AgAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAABDAAAAAAAAABsAAAAAAAAAAAAAAAAA8L8"
+				],
+				[
+					4,
+					1,
+					"insert",
+					{
+						"characters": "\n"
+					},
+					"AQAAAFsAAAAAAAAAXAAAAAAAAAAAAAAA",
+					"AgAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAABbAAAAAAAAAFsAAAAAAAAAAAAAAAAA8L8"
+				],
+				[
+					5,
+					1,
+					"paste",
+					null,
+					"AQAAAFwAAAAAAAAAlQAAAAAAAAAAAAAA",
+					"AgAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAABcAAAAAAAAAFwAAAAAAAAAAAAAAAAA8L8"
+				],
+				[
+					10,
+					1,
+					"paste",
+					null,
+					"AgAAAAAAAAAAAAAAyAAAAAAAAAAAAAAAyAAAAAAAAADIAAAAAAAAAEUBAABpbXBvcnQgUmVhY3QgZnJvbSAncmVhY3QnOwppbXBvcnQgeyBCcm93c2VyUm91dGVyLCBSb3V0ZXMsIFJvdXRlIH0gZnJvbSAncmVhY3Qtcm91dGVyLWRvbSc7CmltcG9ydCB7IExpbmsgfSBmcm9tICdyZWFjdC1yb3V0ZXItZG9tJzsgLy8gQWRkIHRoaXMgbGluZQoKY29uc3QgSG9tZSA9ICgpID0+IHsKICByZXR1cm4gKAogICAgPGRpdj4KICAgICAgPGgxPldlbGNvbWUgdG8gdGhlIERyaXZlciBBcHA8L2gxPgogICAgICA8TGluayB0bz0iL2Rhc2hib2FyZCI+R28gdG8gRGFzaGJvYXJkPC9MaW5rPgogICAgPC9kaXY+CiAgKTsKfTsKCmV4cG9ydCBkZWZhdWx0IEhvbWU7",
+					"AgAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAABFAQAAAAAAAAAAAAAAAAAAAAAAAAAA8L8"
+				]
+			]
+		},
+		{
+			"file": "src/pages/DriverDashboard.js",
+			"settings":
+			{
+				"buffer_size": 584,
+				"encoding": "UTF-8",
+				"line_ending": "Windows"
+			},
+			"undo_stack":
+			[
+				[
+					2,
+					1,
+					"paste",
+					null,
+					"AgAAAAAAAAAAAAAASAIAAAAAAAAAAAAASAIAAAAAAABIAgAAAAAAANMAAABpbXBvcnQgUmVhY3QgZnJvbSAncmVhY3QnOwoKY29uc3QgRHJpdmVyRGFzaGJvYXJkID0gKCkgPT4gewogIHJldHVybiAoCiAgICA8ZGl2PgogICAgICA8aDE+RHJpdmVyIERhc2hib2FyZDwvaDE+CiAgICAgIDxwPlZpZXcgYW5kIG1hbmFnZSB5b3VyIHRyaXBzIGhlcmUuPC9wPgogICAgPC9kaXY+CiAgKTsKfTsKCmV4cG9ydCBkZWZhdWx0IERyaXZlckRhc2hib2FyZDsK",
+					"AgAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAANMAAAAAAAAAAAAAAAAA8L8"
+				]
+			]
+		},
+		{
+			"file": "src/pages/Dashboard.js",
+			"settings":
+			{
+				"buffer_size": 1022,
+				"encoding": "UTF-8",
+				"line_ending": "Windows"
+			},
+			"undo_stack":
+			[
+				[
+					1,
+					1,
+					"paste",
+					null,
+					"AQAAAAAAAAAAAAAAqQAAAAAAAAAAAAAA",
+					"AgAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8"
+				],
+				[
+					7,
+					1,
+					"paste",
+					null,
+					"AgAAAAAAAAAAAAAA3wMAAAAAAAAAAAAA3wMAAAAAAADfAwAAAAAAAKkAAABpbXBvcnQgUmVhY3QgZnJvbSAicmVhY3QiOwoKY29uc3QgRGFzaGJvYXJkID0gKCkgPT4gewogIHJldHVybiAoCiAgICA8ZGl2PgogICAgICA8aDE+V2VsY29tZSB0byB0aGUgRHJpdmVyIERhc2hib2FyZCE8L2gxPgogICAgPC9kaXY+CiAgKTsKfTsKCmV4cG9ydCBkZWZhdWx0IERhc2hib2FyZDsK",
+					"AgAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAKkAAAAAAAAAAAAAAAAA8L8"
+				],
+				[
+					15,
+					1,
+					"paste",
+					null,
+					"AgAAAMEBAAAAAAAADQIAAAAAAAAAAAAADQIAAAAAAAANAgAAAAAAAC4AAAAgY29uc29sZS5lcnJvcignTG9nb3V0IGZhaWxlZDonLCBlcnIubWVzc2FnZSk7",
+					"AgAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAADBAQAAAAAAAO8BAAAAAAAAAAAAAAAA8L8"
+				],
+				[
+					18,
+					1,
+					"insert",
+					{
+						"characters": "\t"
+					},
+					"AQAAAMABAAAAAAAAwgEAAAAAAAAAAAAA",
+					"AgAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAADAAQAAAAAAAMABAAAAAAAAAAAAAAAA8L8"
+				],
+				[
+					19,
+					1,
+					"right_delete",
+					null,
+					"AQAAAMIBAAAAAAAAwgEAAAAAAAABAAAAIA",
+					"AgAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAADCAQAAAAAAAMIBAAAAAAAAAAAAAAAA8L8"
+				],
+				[
+					27,
+					1,
+					"toggle_comment",
+					{
+						"block": false
+					},
+					"AQAAAJkBAAAAAAAAnAEAAAAAAAAAAAAA",
+					"AgAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAACaAQAAAAAAAJoBAAAAAAAAAAAAAAAA8L8"
+				],
+				[
+					28,
+					1,
+					"toggle_comment",
+					{
+						"block": false
+					},
+					"AQAAAJkBAAAAAAAAmQEAAAAAAAADAAAALy8g",
+					"AgAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAACdAQAAAAAAAJ0BAAAAAAAAAAAAAAAA8L8"
+				],
+				[
+					37,
+					1,
+					"toggle_comment",
+					{
+						"block": false
+					},
+					"AQAAAEcBAAAAAAAASgEAAAAAAAAAAAAA",
+					"AgAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAABGAQAAAAAAAEYBAAAAAAAAAAAAAAAA8L8"
+				],
+				[
+					42,
+					1,
+					"toggle_comment",
+					{
+						"block": false
+					},
+					"AQAAAAUBAAAAAAAACAEAAAAAAAAAAAAA",
+					"AgAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAHAQAAAAAAAAcBAAAAAAAAAAAAAADAUkA"
+				],
+				[
+					43,
+					1,
+					"toggle_comment",
+					{
+						"block": false
+					},
+					"AQAAAAUBAAAAAAAABQEAAAAAAAADAAAALy8g",
+					"AgAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAKAQAAAAAAAAoBAAAAAAAAAAAAAAAA8L8"
+				],
+				[
+					86,
+					1,
+					"toggle_comment",
+					{
+						"block": false
+					},
+					"AQAAAEcBAAAAAAAARwEAAAAAAAADAAAALy8g",
+					"AgAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAABPAQAAAAAAAE8BAAAAAAAAAAAAAAAA8L8"
+				]
+			]
+		},
+		{
+			"file": "src/pages/Login.js",
+			"settings":
+			{
+				"buffer_size": 3025,
+				"encoding": "UTF-8",
+				"line_ending": "Windows"
+			},
+			"undo_stack":
+			[
+				[
+					3,
+					1,
+					"reindent",
+					null,
+					"AQAAAD0CAAAAAAAAQwIAAAAAAAAAAAAA",
+					"AgAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAA9AgAAAAAAAD0CAAAAAAAAAAAAAAAA8L8"
+				],
+				[
+					4,
+					1,
+					"paste",
+					null,
+					"AQAAAEMCAAAAAAAAdwIAAAAAAAAAAAAA",
+					"AgAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAABDAgAAAAAAAEMCAAAAAAAAAAAAAAAA8L8"
+				],
+				[
+					7,
+					1,
+					"insert",
+					{
+						"characters": "\n"
+					},
+					"AgAAAE8DAAAAAAAAUAMAAAAAAAAAAAAAUAMAAAAAAABWAwAAAAAAAAAAAAA",
+					"AgAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAABPAwAAAAAAAE8DAAAAAAAAAAAAAAAA8L8"
+				],
+				[
+					8,
+					1,
+					"paste",
+					null,
+					"AQAAAFYDAAAAAAAAiAMAAAAAAAAAAAAA",
+					"AgAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAABWAwAAAAAAAFYDAAAAAAAAAAAAAAAA8L8"
+				],
+				[
+					11,
+					1,
+					"insert",
+					{
+						"characters": "//"
+					},
+					"AgAAAKMCAAAAAAAApAIAAAAAAAAAAAAApAIAAAAAAAClAgAAAAAAAAAAAAA",
+					"AgAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAACjAgAAAAAAAKMCAAAAAAAAAAAAAAAA8L8"
+				],
+				[
+					21,
+					1,
+					"toggle_comment",
+					{
+						"block": false
+					},
+					"AQAAAKMCAAAAAAAAowIAAAAAAAACAAAALy8",
+					"AgAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAACpAgAAAAAAAKkCAAAAAAAAAAAAAAAA8L8"
+				]
+			]
+		},
+		{
+			"file": "src/services/api.js",
+			"redo_stack":
+			[
+				[
+					52,
+					1,
+					"insert",
+					{
+						"characters": "\t"
+					},
+					"AQAAAAQDAAAAAAAABAMAAAAAAAABAAAAIA",
+					"AgAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAFAwAAAAAAAAUDAAAAAAAAAAAAAAAA8L8"
+				]
+			],
+			"settings":
+			{
+				"buffer_size": 842,
+				"encoding": "UTF-8",
+				"line_ending": "Windows"
+			},
+			"undo_stack":
+			[
+				[
+					1,
+					1,
+					"paste",
+					null,
+					"AQAAAAAAAAAAAAAAuAEAAAAAAAAAAAAA",
+					"AgAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8"
+				],
+				[
+					8,
+					1,
+					"paste",
+					null,
+					"AgAAAAAAAAAAAAAAvQEAAAAAAAAAAAAAvQEAAAAAAAC9AQAAAAAAALgBAABpbXBvcnQgYXhpb3MgZnJvbSAnYXhpb3MnOwoKY29uc3QgQVBJID0gYXhpb3MuY3JlYXRlKHsKICBiYXNlVVJMOiAnaHR0cHM6Ly95b3VyLWJhY2tlbmQtYXBpLmNvbScsCn0pOwoKZXhwb3J0IGNvbnN0IGZldGNoVHJpcHMgPSBhc3luYyAoKSA9PiB7CiAgY29uc3QgcmVzcG9uc2UgPSBhd2FpdCBBUEkuZ2V0KCcvdHJpcHMnKTsKICByZXR1cm4gcmVzcG9uc2UuZGF0YTsKfTsKCmV4cG9ydCBjb25zdCBmZXRjaFRyaXBEZXRhaWxzID0gYXN5bmMgKGlkKSA9PiB7CiAgY29uc3QgcmVzcG9uc2UgPSBhd2FpdCBBUEkuZ2V0KGAvdHJpcHMvJHtpZH1gKTsKICByZXR1cm4gcmVzcG9uc2UuZGF0YTsKfTsKCmV4cG9ydCBjb25zdCB1cGRhdGVQcm9maWxlID0gYXN5bmMgKHByb2ZpbGVEYXRhKSA9PiB7CiAgYXdhaXQgQVBJLnB1dCgnL3Byb2ZpbGUnLCBwcm9maWxlRGF0YSk7Cn07Cg",
+					"AgAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAC4AQAAAAAAAAAAAAAAAAAAAAAAAAAA8L8"
+				],
+				[
+					18,
+					1,
+					"paste",
+					null,
+					"AgAAAAAAAAAAAAAAcgEAAAAAAAAAAAAAcgEAAAAAAAByAQAAAAAAAL0BAABpbXBvcnQgUmVhY3QgZnJvbSAicmVhY3QiOwppbXBvcnQgeyBCcm93c2VyUm91dGVyIGFzIFJvdXRlciwgUm91dGVzLCBSb3V0ZSB9IGZyb20gInJlYWN0LXJvdXRlci1kb20iOwppbXBvcnQgTG9naW4gZnJvbSAiLi9wYWdlcy9Mb2dpbiI7CmltcG9ydCBEYXNoYm9hcmQgZnJvbSAiLi9wYWdlcy9EYXNoYm9hcmQiOyAvLyBQbGFjZWhvbGRlciBmb3IgeW91ciBkYXNoYm9hcmQgcGFnZQoKY29uc3QgQXBwID0gKCkgPT4gewogIHJldHVybiAoCiAgICA8Um91dGVyPgogICAgICA8Um91dGVzPgogICAgICAgIDxSb3V0ZSBwYXRoPSIvIiBlbGVtZW50PXs8TG9naW4gLz59IC8+CiAgICAgICAgPFJvdXRlIHBhdGg9Ii9kYXNoYm9hcmQiIGVsZW1lbnQ9ezxEYXNoYm9hcmQgLz59IC8+CiAgICAgIDwvUm91dGVzPgogICAgPC9Sb3V0ZXI+CiAgKTsKfTsKCmV4cG9ydCBkZWZhdWx0IEFwcDsK",
+					"AgAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAL0BAAAAAAAAAAAAAAAA8L8"
+				],
+				[
+					25,
+					1,
+					"insert",
+					{
+						"characters": "\n\n"
+					},
+					"AgAAAFwBAAAAAAAAXQEAAAAAAAAAAAAAXQEAAAAAAABeAQAAAAAAAAAAAAA",
+					"AgAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAABcAQAAAAAAAFwBAAAAAAAAAAAAAAAA8L8"
+				],
+				[
+					26,
+					1,
+					"paste",
+					null,
+					"AQAAAF4BAAAAAAAAywIAAAAAAAAAAAAA",
+					"AgAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAABeAQAAAAAAAF4BAAAAAAAAAAAAAAAA8L8"
+				],
+				[
+					29,
+					1,
+					"paste",
+					null,
+					"AgAAAF4BAAAAAAAALwMAAAAAAAAAAAAALwMAAAAAAAAvAwAAAAAAAG0BAABleHBvcnQgY29uc3QgbG9nb3V0ID0gYXN5bmMgKCkgPT4gewogIGNvbnN0IHRva2VuID0gbG9jYWxTdG9yYWdlLmdldEl0ZW0oJ3Rva2VuJyk7CiAgaWYgKCF0b2tlbikgewogICAgdGhyb3cgbmV3IEVycm9yKCdObyB0b2tlbiBmb3VuZCwgdXNlciBtaWdodCBhbHJlYWR5IGJlIGxvZ2dlZCBvdXQuJyk7CiAgfQoKICBjb25zdCByZXNwb25zZSA9IGF3YWl0IEFQSS5nZXQoJy9kcml2ZXIvbG9nb3V0JywgewogICAgaGVhZGVyczogewogICAgICBBdXRob3JpemF0aW9uOiBgQmVhcmVyICR7dG9rZW59YCwgLy8gSW5jbHVkZSB0aGUgdG9rZW4gZm9yIGF1dGhvcml6YXRpb24KICAgIH0sCiAgfSk7CgogIHJldHVybiByZXNwb25zZS5kYXRhOwp9Ow",
+					"AgAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAADLAgAAAAAAAF4BAAAAAAAAAAAAAAAA8L8"
+				],
+				[
+					36,
+					1,
+					"insert",
+					{
+						"characters": "    "
+					},
+					"BAAAAEkCAAAAAAAASgIAAAAAAAAAAAAASgIAAAAAAABLAgAAAAAAAAAAAABLAgAAAAAAAEwCAAAAAAAAAAAAAEwCAAAAAAAATQIAAAAAAAAAAAAA",
+					"AgAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAABJAgAAAAAAAEkCAAAAAAAAAAAAAAAA8L8"
+				],
+				[
+					37,
+					4,
+					"left_delete",
+					null,
+					"BAAAAEwCAAAAAAAATAIAAAAAAAABAAAAIEsCAAAAAAAASwIAAAAAAAABAAAAIEoCAAAAAAAASgIAAAAAAAABAAAAIEkCAAAAAAAASQIAAAAAAAABAAAAIA",
+					"AgAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAABNAgAAAAAAAE0CAAAAAAAAAAAAAAAA8L8"
+				],
+				[
+					38,
+					1,
+					"insert",
+					{
+						"characters": "  "
+					},
+					"AgAAAEkCAAAAAAAASgIAAAAAAAAAAAAASgIAAAAAAABLAgAAAAAAAAAAAAA",
+					"AgAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAABJAgAAAAAAAEkCAAAAAAAAAAAAAAAA8L8"
+				],
+				[
+					39,
+					3,
+					"left_delete",
+					null,
+					"AwAAAEoCAAAAAAAASgIAAAAAAAABAAAAIEkCAAAAAAAASQIAAAAAAAABAAAAIEgCAAAAAAAASAIAAAAAAAABAAAAYw",
+					"AgAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAABLAgAAAAAAAEsCAAAAAAAAAAAAAAAA8L8"
+				],
+				[
+					40,
+					1,
+					"insert",
+					{
+						"characters": "c"
+					},
+					"AQAAAEgCAAAAAAAASQIAAAAAAAAAAAAA",
+					"AgAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAABIAgAAAAAAAEgCAAAAAAAAAAAAAAAA8L8"
+				],
+				[
+					51,
+					1,
+					"paste",
+					null,
+					"AgAAAPcCAAAAAAAABAMAAAAAAAAAAAAABAMAAAAAAAAEAwAAAAAAAAgAAAByZXNwb25zZQ",
+					"AgAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAD3AgAAAAAAAP8CAAAAAAAAAAAAAAAA8L8"
+				]
+			]
+		},
+		{
+			"contents": "Searching 17 files for \"removeItem\"\n\nD:\\driver-app\\src\\pages\\Dashboard.js:\n   12  \n   13        // Clear the token from localStorage\n   14:       localStorage.removeItem('token');\n   15  \n   16        // Navigate back to the login page\n\n1 match in 1 file\n",
+			"settings":
+			{
+				"buffer_size": 255,
+				"line_ending": "Windows",
+				"name": "Find Results",
+				"scratch": true
+			}
+		},
+		{
+			"file": "src/components/Navigation.js",
+			"settings":
+			{
+				"buffer_size": 392,
+				"encoding": "UTF-8",
+				"line_ending": "Windows"
+			},
+			"undo_stack":
+			[
+				[
+					1,
+					1,
+					"paste",
+					null,
+					"AQAAAAAAAAAAAAAAiAEAAAAAAAAAAAAA",
+					"AgAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8"
+				]
+			]
+		},
+		{
+			"file": "src/components/TripList.js",
+			"settings":
+			{
+				"buffer_size": 359,
+				"encoding": "UTF-8",
+				"line_ending": "Windows"
+			},
+			"undo_stack":
+			[
+				[
+					1,
+					1,
+					"paste",
+					null,
+					"AQAAAAAAAAAAAAAAZwEAAAAAAAAAAAAA",
+					"AgAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8"
+				]
+			]
+		},
+		{
+			"file": "src/App.js",
+			"settings":
+			{
+				"buffer_size": 406,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			},
+			"undo_stack":
+			[
+				[
+					3,
+					1,
+					"paste",
+					null,
+					"AgAAAL8AAAAAAAAAcwEAAAAAAAAAAAAAcwEAAAAAAABzAQAAAAAAANAAAABjb25zdCBBcHAgPSAoKSA9PiB7CiAgcmV0dXJuICgKICAgIDxSb3V0ZXI+CiAgICAgIDxSb3V0ZXM+CiAgICAgICAgPFJvdXRlIHBhdGg9Ii8iIGVsZW1lbnQ9ezxIb21lIC8+fSAvPgogICAgICAgIDxSb3V0ZSBwYXRoPSIvZGFzaGJvYXJkIiBlbGVtZW50PXs8RHJpdmVyRGFzaGJvYXJkIC8+fSAvPgogICAgICA8L1JvdXRlcz4KICAgIDwvUm91dGVyPgogICk7Cn07",
+					"AgAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAACPAQAAAAAAAL8AAAAAAAAAAAAAAAAA8L8"
+				],
+				[
+					6,
+					1,
+					"paste",
+					null,
+					"AgAAAAAAAAAAAAAAUAIAAAAAAAAAAAAAUAIAAAAAAABQAgAAAAAAAIgBAABpbXBvcnQgUmVhY3QgZnJvbSAncmVhY3QnOwppbXBvcnQgeyBCcm93c2VyUm91dGVyIGFzIFJvdXRlciwgUm91dGVzLCBSb3V0ZSB9IGZyb20gJ3JlYWN0LXJvdXRlci1kb20nOwppbXBvcnQgSG9tZSBmcm9tICcuL3BhZ2VzL0hvbWUnOwppbXBvcnQgRHJpdmVyRGFzaGJvYXJkIGZyb20gJy4vcGFnZXMvRHJpdmVyRGFzaGJvYXJkJzsKCmNvbnN0IEFwcCA9ICgpID0+ICgKICA8Um91dGVyPgogICAgPFJvdXRlcz4KICAgICAgPFJvdXRlIHBhdGg9Ii8iIGVsZW1lbnQ9ezxIb21lIC8+fSAvPgogICAgICA8Um91dGUgcGF0aD0iL2Rhc2hib2FyZCIgZWxlbWVudD17PERyaXZlckRhc2hib2FyZCAvPn0gLz4KICAgIDwvUm91dGVzPgogIDwvUm91dGVyPgopOwoKZXhwb3J0IGRlZmF1bHQgQXBwOw",
+					"AgAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAACIAQAAAAAAAAAAAAAAAAAAAAAAAAAA8L8"
+				],
+				[
+					12,
+					1,
+					"paste",
+					null,
+					"AgAAAAAAAAAAAAAAlgEAAAAAAAAAAAAAlgEAAAAAAACWAQAAAAAAAFECAABpbXBvcnQgUmVhY3QgZnJvbSAncmVhY3QnOwppbXBvcnQgeyBCcm93c2VyUm91dGVyIGFzIFJvdXRlciwgUm91dGVzLCBSb3V0ZSB9IGZyb20gJ3JlYWN0LXJvdXRlci1kb20nOwppbXBvcnQgSG9tZSBmcm9tICcuL3BhZ2VzL0hvbWUnOwppbXBvcnQgRHJpdmVyRGFzaGJvYXJkIGZyb20gJy4vcGFnZXMvRHJpdmVyRGFzaGJvYXJkJzsKaW1wb3J0IFRyaXBEZXRhaWxzIGZyb20gJy4vcGFnZXMvVHJpcERldGFpbHMnOwppbXBvcnQgUHJvZmlsZSBmcm9tICcuL3BhZ2VzL1Byb2ZpbGUnOwoKY29uc3QgQXBwID0gKCkgPT4gKAogIDxSb3V0ZXI+CiAgICA8Um91dGVzPgogICAgICA8Um91dGUgcGF0aD0iLyIgZWxlbWVudD17PEhvbWUgLz59IC8+CiAgICAgIDxSb3V0ZSBwYXRoPSIvZGFzaGJvYXJkIiBlbGVtZW50PXs8RHJpdmVyRGFzaGJvYXJkIC8+fSAvPgogICAgICA8Um91dGUgcGF0aD0iL3RyaXAvOmlkIiBlbGVtZW50PXs8VHJpcERldGFpbHMgLz59IC8+CiAgICAgIDxSb3V0ZSBwYXRoPSIvcHJvZmlsZSIgZWxlbWVudD17PFByb2ZpbGUgLz59IC8+CiAgICA8L1JvdXRlcz4KICA8L1JvdXRlcj4KKTsKCmV4cG9ydCBkZWZhdWx0IEFwcDsKCg",
+					"AgAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAFECAAAAAAAAAAAAAAAA8L8"
+				]
+			]
+		},
+		{
+			"file": "package.json",
+			"settings":
+			{
+				"buffer_size": 950,
+				"line_ending": "Unix"
+			},
+			"undo_stack":
+			[
+				[
+					9,
+					1,
+					"revert",
+					null,
+					"AwAAAAAAAAAAAAAAAAAAAAAAAACfAwAAewogICJuYW1lIjogImRyaXZlci1hcHAiLAogICJ2ZXJzaW9uIjogIjAuMS4wIiwKICAicHJpdmF0ZSI6IHRydWUsCiAgImRlcGVuZGVuY2llcyI6IHsKICAgICJAdGVzdGluZy1saWJyYXJ5L2plc3QtZG9tIjogIl41LjE3LjAiLAogICAgIkB0ZXN0aW5nLWxpYnJhcnkvcmVhY3QiOiAiXjEzLjQuMCIsCiAgICAiQHRlc3RpbmctbGlicmFyeS91c2VyLWV2ZW50IjogIl4xMy41LjAiLAogICAgInJlYWN0IjogIl4xOC4zLjEiLAogICAgInJlYWN0LWRvbSI6ICJeMTguMy4xIiwKICAgICJyZWFjdC1yb3V0ZXItZG9tIjogIl43LjAuMSIsCiAgICAid2ViLXZpdGFscyI6ICJeMi4xLjQiCiAgfSwKICAic2NyaXB0cyI6IHsKICAgICJ0ZXN0IjogInJlYWN0LXNjcmlwdHMgdGVzdCIsCiAgICAiZWplY3QiOiAicmVhY3Qtc2NyaXB0cyBlamVjdCIsCiAgICAic3RhcnQiOiAicmVhY3Qtc2NyaXB0cyAtLW9wZW5zc2wtbGVnYWN5LXByb3ZpZGVyIHN0YXJ0IiwKICAgICJidWlsZCI6ICJyZWFjdC1zY3JpcHRzIC0tb3BlbnNzbC1sZWdhY3ktcHJvdmlkZXIgYnVpbGQiCiAgfSwKICAiZXNsaW50Q29uZmlnIjogewogICAgImV4dGVuZHMiOiBbCiAgICAgICJyZWFjdC1hcHAiLAogICAgICAicmVhY3QtYXBwL2plc3QiCiAgICBdCiAgfSwKICAiYnJvd3NlcnNsaXN0IjogewogICAgInByb2R1Y3Rpb24iOiBbCiAgICAgICI+MC4yJSIsCiAgICAgICJub3QgZGVhZCIsCiAgICAgICJub3Qgb3BfbWluaSBhbGwiCiAgICBdLAogICAgImRldmVsb3BtZW50IjogWwogICAgICAibGFzdCAxIGNocm9tZSB2ZXJzaW9uIiwKICAgICAgImxhc3QgMSBmaXJlZm94IHZlcnNpb24iLAogICAgICAibGFzdCAxIHNhZmFyaSB2ZXJzaW9uIgogICAgXQogIH0sCiAgImRldkRlcGVuZGVuY2llcyI6IHsKICAgICJyZWFjdC1zY3JpcHRzIjogIl41LjAuMSIKICB9Cn0KAAAAAAAAAAC2AwAAAAAAAAAAAAAAAAAAAAAAALYDAAAAAAAAAAAAAA",
+					"AgAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAACpAQAAAAAAAOIBAAAAAAAAAAAAAAAA8L8"
+				]
+			]
+		}
+	],
+	"build_system": "",
+	"build_system_choices":
+	[
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"console":
+	{
+		"height": 0.0,
+		"history":
+		[
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"expanded_folders":
+	[
+		"/D/driver-app"
+	],
+	"file_history":
+	[
+		"/D/driver-app/src/pages/login.js",
+		"/D/driver-app/src/pages/Profile.js",
+		"/D/driver-app/src/pages/TripDetails.js",
+		"/D/driver-app/src/pages/DriverDashboard.js",
+		"/D/driver-app/package.json",
+		"/D/driver-app/src/index.js",
+		"/D/driver-app/src/App.js",
+		"/D/driverapp/src/pages/DriverDashboard.js",
+		"/D/driverapp/src/App.js",
+		"/D/driverapp/src/pages/Home.js",
+		"/D/driverapp/src/index.js",
+		"/D/driver-app/src/pages/Home.js",
+		"/D/driverapp/src/services/api.js",
+		"/D/driverapp/src/context/DriverContext.js",
+		"/D/driverapp/src/Button.js",
+		"/D/driverapp/src/index.css",
+		"/D/driverapp/src/Home.js",
+		"/D/driverapp/src/DriverDashboard.js",
+		"/C/Users/kiran/Downloads/laundry-v5-latest/laundry-v5/html/login.html",
+		"/D/xampp/htdocs/laundryatyourdoor/css/style.css",
+		"/D/xampp/htdocs/laundryatyourdoor/resources/views/auth/login.blade.php",
+		"/D/xampp/htdocs/laundryatyourdoor/.env",
+		"/D/xampp/htdocs/laundryatyourdoor/app/Models/Address.php",
+		"/D/xampp/htdocs/laundryatyourdoor/routes/web.php",
+		"/D/xampp/htdocs/laundryatyourdoor/resources/views/orders/create.blade.php",
+		"/D/xampp/htdocs/laundryatyourdoor/app/Http/Controllers/OrderController.php",
+		"/D/xampp/htdocs/laundryatyourdoor/resources/views/orders/index.blade.php",
+		"/D/xampp/htdocs/laundryatyourdoor/resources/views/profile/show.blade.php",
+		"/D/xampp/htdocs/laundryatyourdoor/app/Http/Controllers/ProfileController.php",
+		"/D/xampp/htdocs/laundryatyourdoor/app/Http/Controllers/Auth/SocialLoginController.php",
+		"/D/xampp/htdocs/laundryatyourdoor/resources/views/auth/update-phone.blade.php",
+		"/D/xampp/htdocs/laundryatyourdoor/resources/views/auth/register.blade.php",
+		"/D/xampp/htdocs/laundryatyourdoor/config/mail.php",
+		"/D/xampp/htdocs/laundryatyourdoor/config/services.php",
+		"/D/xampp/htdocs/laundryatyourdoor/resources/views/layouts/master.blade.php",
+		"/C/Users/kiran/Downloads/laundry-v5-latest/laundry-v5/html/contactInfo.html",
+		"/D/xampp/htdocs/laundryatyourdoor/app/Models/User.php",
+		"/D/xampp/htdocs/laundryatyourdoor/app/Models/Customer.php",
+		"/D/xampp/htdocs/laundryatyourdoor/resources/views/update-phone.blade.php",
+		"/D/xampp/htdocs/laundryatyourdoor/resources/views/errors/404.blade.php",
+		"/D/xampp/htdocs/laundryatyourdoor/resources/views/auth/passwords/reset.blade.php",
+		"/D/xampp/htdocs/laundryatyourdoor/resources/views/auth/passwords/email.blade.php",
+		"/C/Users/kiran/Downloads/laundry-v5-latest/laundry-v5/html/forgotPassword.html",
+		"/D/xampp/htdocs/laundryatyourdoor/app/Mail/TestMail.php",
+		"/D/xampp/htdocs/laundryatyourdoor/resources/views/email/activate_account.blade.php",
+		"/D/xampp/htdocs/laundryatyourdoor/database/migrations/2014_10_12_100000_create_password_resets_table.php",
+		"/D/xampp/htdocs/laundryatyourdoor/database/migrations/2024_11_16_193518_create_password_reset_tokens_table.php",
+		"/D/xampp/htdocs/laundryatyourdoor/app/Http/Controllers/Auth/LoginController.php",
+		"/D/xampp/htdocs/laundryatyourdoor/resources/views/layouts/app.blade.php",
+		"/D/xampp/htdocs/laundryatyourdoor/package.json",
+		"/D/xampp/htdocs/laundryatyourdoor/index_orignal.html",
+		"/D/xampp/htdocs/laundryatyourdoor/app/Http/Controllers/Auth/RegisterController.php",
+		"/D/xampp/htdocs/laundryatyourdoor/resources/views/login.blade_old.php",
+		"/D/xampp/htdocs/laundryatyourdoor/resources/views/orders/success.blade.php",
+		"/D/xampp/htdocs/laundryatyourdoor/app/Exceptions/Handler.php",
+		"/D/xampp/htdocs/laundryatyourdoor/config/session.php",
+		"/D/xampp/htdocs/laundryatyourdoor/app/Http/Middleware/SessionExpiredMiddleware.php",
+		"/D/xampp/htdocs/laundryatyourdoor/app/Http/Kernel.php",
+		"/D/xampp/htdocs/laundryatyourdoor/app/Http/Middleware/VerifyCsrfToken.php",
+		"/D/xampp/htdocs/laundryatyourdoor/app/Http/Middleware/RedirectIfAuthenticated.php",
+		"/D/xampp/htdocs/laundryatyourdoor/app/Http/Middleware/Authenticate.php",
+		"/C/Users/kiran/Downloads/laundry-v5-latest/laundry-v5/html/services.html",
+		"/C/Users/kiran/Downloads/laundry-v5-latest/laundry-v5/css/style.css",
+		"/D/xampp/htdocs/laundryatyourdoor/config/auth.php",
+		"/D/xampp/htdocs/laundryatyourdoor/index.html",
+		"/C/Users/kiran/Downloads/laundry-v5-latest/laundry-v5/html/paymentDetails.html",
+		"/D/xampp/htdocs/laundryatyourdoor/css/mbr-additional.css",
+		"/C/Users/kiran/Downloads/laundry-v5-latest/laundry-v5/js/script.js",
+		"/D/xampp/htdocs/laundryatyourdoor/js/script.js",
+		"/D/xampp/htdocs/laundryatyourdoor/app/Models/Media.php",
+		"/D/xampp/htdocs/laundryatyourdoor/app/Models/Service.php",
+		"/D/xampp/htdocs/laundryatyourdoor/app/Http/Controllers/LogInController.php",
+		"/D/xampp/htdocs/laundryatyourdoor/css/slider.css",
+		"/C/Users/kiran/Downloads/laundry-v5-latest/laundry-v5/html/aboutUs.html",
+		"/D/xampp/htdocs/laundryatyourdoor/resources/views/addresses.blade.php",
+		"/D/xampp/htdocs/laundryatyourdoor/resources/views/show.blade.php",
+		"/D/xampp/htdocs/laundryatyourdoor/app/Models/CartItem.php",
+		"/D/xampp/htdocs/laundryatyourdoor/app/Models/Product.php",
+		"/D/xampp/htdocs/laundryatyourdoor/app/Models/Order.php",
+		"/D/xampp/htdocs/laundryatyourdoor/css/main.css",
+		"/D/xampp/htdocs/laundryatyourdoor/app/Http/Controllers/AddressController.php",
+		"/D/xampp/htdocs/laundryatyourdoor/app/Http/Controllers/Auth/RegistrationController.php",
+		"/C/Users/kiran/Downloads/laundry-v5-latest/laundry-v5/html/pickupAddress.html",
+		"/D/xampp/htdocs/laundryatyourdoor/resources/views/services.blade.php",
+		"/D/xampp/htdocs/laundryatyourdoor/app/Http/Controllers/ServiceController.php",
+		"/D/xampp/htdocs/laundryatyourdoor/app/Models/Variant.php",
+		"/D/xampp/htdocs/laundryatyourdoor/database/migrations/2024_10_15_223033_create_services_table.php",
+		"/D/xampp/htdocs/laundryatyourdoor/database/migrations/2024_10_13_141630_create_cart_items_table.php",
+		"/C/Users/kiran/Downloads/laundry-v5-latest/laundry-v5/html/orderSuccess.html",
+		"/D/xampp/htdocs/laundryatyourdoor/resources/views/orders/orderSuccess.html",
+		"/D/xampp/htdocs/laundryatyourdoor/app/Http/Controllers/AboutUsController.php",
+		"/D/xampp/htdocs/laundryatyourdoor/resources/views/orders/orderSucess.blade.php",
+		"/D/xampp/htdocs/laundryatyourdoor/database/migrations/create_cart_items_table.php",
+		"/D/xampp/htdocs/laundryatyourdoor/app/Mail/AccountActivation.php",
+		"/D/xampp/htdocs/laundryatyourdoor/orderBooking_tab.html",
+		"/D/xampp/htdocs/laundryatyourdoor/orderBooking.html",
+		"/D/xampp/htdocs/laundryatyourdoor/app/Repositories/UserRepository.php",
+		"/D/xampp/htdocs/laundryatyourdoor/resources/views/login.blade.php",
+		"/D/xampp/htdocs/laundryatyourdoor/database/database.sqlite",
+		"/D/xampp/htdocs/laundryatyourdoor/orderBooking - Cart.html",
+		"/D/xampp/htdocs/laundryatyourdoor/app/Providers/AppServiceProvider.php",
+		"/D/xampp/htdocs/laundryatyourdoor/orderBooking - Cart - working.html",
+		"/D/xampp/htdocs/laundryatyourdoor/orderBooking - Servicable.html",
+		"/D/xampp/htdocs/laundryatyourdoor/orderBooking_model.html",
+		"/D/xampp/htdocs/laundryatyourdoor/resources/views/about-us.blade.php",
+		"/D/xampp/htdocs/laundryatyourdoor/vendor/fakerphp/faker/src/Faker/ORM/Propel2/EntityPopulator.php",
+		"/D/xampp/htdocs/laundryatyourdoor/resources/views/home.blade.php",
+		"/D/xampp/htdocs/laundry/app/Models/StoreProduct.php",
+		"/D/xampp/htdocs/laundry/app/Http/Controllers/Web/Root/ShopController.php",
+		"/D/xampp/htdocs/laundry/app/Repositories/AddressRepository.php",
+		"/C/Users/kiran/Downloads/laundry_21.09.24_14.04.sql",
+		"/D/xampp/htdocs/laundry/resources/views/shop/priceupdate.blade.php",
+		"/D/xampp/htdocs/laundry/routes/web.php",
+		"/D/xampp/htdocs/laundry/resources/views/shop/product.blade.php",
+		"/D/xampp/htdocs/laundry/app/Http/Controllers/API/Auth/AuthController.php",
+		"/C/Users/kiran/Downloads/laundry_by_pravin_17.09.24/database/migrations/2024_08_23_144701_add_user_id_to_products_table.php",
+		"/C/Users/kiran/Downloads/laundry_by_pravin_17.09.24/database/migrations/2024_09_14_145544_create_store_products_table.php",
+		"/D/xampp/htdocs/laundry/app/Models/Product.php",
+		"/C/Users/kiran/Downloads/laundry_by_pravin_17.09.24/database/factories/ProductFactory.php",
+		"/C/Users/kiran/Downloads/laundry_by_pravin_17.09.24/database/migrations/2024_08_23_135407_add_user_id_to_store_services_table.php",
+		"/D/xampp/htdocs/laundrypravin/database/migrations/2024_09_14_145544_create_store_products_table.php",
+		"/D/xampp/htdocs/laundryatyourdoor/aboutUs.html",
+		"/D/xampp/htdocs/laundryatyourdoor/howitworks.html",
+		"/D/xampp/htdocs/laundryatyourdoor/index_1.html",
+		"/D/xampp/htdocs/laundryatyourdoor/saveTime_saveStress.html",
+		"/D/xampp/htdocs/laundryatyourdoor/termsandconditions.html",
+		"/D/xampp/htdocs/laundryatyourdoor/html/aboutUs.html",
+		"/D/xampp/htdocs/laundryatyourdoor/html/comingsoon.html"
+	],
+	"find":
+	{
+		"height": 29.3333333333
+	},
+	"find_in_files":
+	{
+		"height": 108.0,
+		"where_history":
+		[
+			"D:\\driver-app\\src"
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"removeItem",
+			"scripts"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+		],
+		"reverse": false,
+		"scrollbar_highlights": true,
+		"show_context": true,
+		"use_buffer2": true,
+		"use_gitignore": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "src/pages/Home.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 201,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								200,
+								200
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 9,
+					"stack_multiselect": false,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "src/pages/DriverDashboard.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 584,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								291,
+								291
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 8,
+					"stack_multiselect": false,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "src/pages/Dashboard.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1022,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								267,
+								267
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"stack_multiselect": false,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "src/pages/Login.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3025,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								679,
+								679
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 240.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"stack_multiselect": false,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "src/services/api.js",
+					"selected": true,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 842,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								499,
+								499
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 243.333333333,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"stack_multiselect": false,
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 255,
+						"regions":
+						{
+							"match":
+							{
+								"flags": 112,
+								"regions":
+								[
+									[
+										159,
+										169
+									]
+								],
+								"scope": ""
+							}
+						},
+						"selection":
+						[
+							[
+								160,
+								160
+							]
+						],
+						"settings":
+						{
+							"detect_indentation": false,
+							"line_numbers": false,
+							"output_tag": 1,
+							"result_base_dir": "",
+							"result_file_regex": "^([^ \t].*):$",
+							"result_line_regex": "^ +([0-9]+):",
+							"scroll_past_end": true,
+							"syntax": "Packages/Default/Find Results.hidden-tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"stack_multiselect": false,
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "src/components/Navigation.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 392,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								363,
+								363
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 4,
+					"stack_multiselect": false,
+					"type": "text"
+				},
+				{
+					"buffer": 7,
+					"file": "src/components/TripList.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 359,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								359,
+								359
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 5,
+					"stack_multiselect": false,
+					"type": "text"
+				},
+				{
+					"buffer": 8,
+					"file": "src/App.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 406,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								130,
+								130
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 7,
+					"stack_multiselect": false,
+					"type": "text"
+				},
+				{
+					"buffer": 9,
+					"file": "package.json",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 950,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								425,
+								482
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JSON/JSON.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 120.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 6,
+					"stack_multiselect": false,
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 29.3333333333
+	},
+	"input":
+	{
+		"height": 41.3333333333
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"pinned_build_system": "",
+	"project": "driver-app.sublime-project",
+	"replace":
+	{
+		"height": 54.6666666667
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 281.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}

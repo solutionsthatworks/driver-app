@@ -48,7 +48,7 @@ const Login = () => {
           console.log(`Latitude: ${latitude}, Longitude: ${longitude}`);
 
           // Optional: Use Google Maps Geocoding API to get address
-          const googleApiKey = 'AIzaSyBNbZwQ5xuZqg5ariGiE__P2knhxpLcHhg'; // Replace with your Google API key
+          const googleApiKey = ''; //AIzaSyBNbZwQ5xuZqg5ariGiE__P2knhxpLcHhg Replace with your Google API key
           const geocodeUrl = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${googleApiKey}`;
 
           try {

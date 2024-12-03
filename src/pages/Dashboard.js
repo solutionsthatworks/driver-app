@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { fetchDriverOrders, acceptOrderPickup, rejectOrderPickup } from '../services/api';
@@ -13,7 +13,7 @@ const Dashboard = () => {
   const [locationError, setLocationError] = useState(null);
   const navigate = useNavigate();
 
-  React.useEffect(() => {
+  useEffect(() => {
     const validateTokenAndFetchOrders = async () => {
       const token = localStorage.getItem('token');
 
@@ -24,8 +24,12 @@ const Dashboard = () => {
       }
 
       try {
-        const orders = await fetchDriverOrders(token);
-        setOrders(orders || []);
+        const fetchedOrders = await fetchDriverOrders(token);
+        const updatedOrders = fetchedOrders.map((order) => ({
+          ...order,
+          disableButtons: order.is_accept === 1 || order.is_accept === 2, // Determine button state
+        }));
+        setOrders(updatedOrders || []);
         trackLiveLocation(); // Start tracking live location
       } catch (err) {
         console.error('Error fetching orders:', err.message);
@@ -43,17 +47,12 @@ const Dashboard = () => {
       navigator.geolocation.watchPosition(
         async (position) => {
           const { latitude, longitude, accuracy } = position.coords;
-          console.log(`Latitude: ${latitude}, Longitude: ${longitude}, Accuracy: ${accuracy} meters`);
-
-          // Update location state regardless of accuracy
           setCurrentLocation({ latitude, longitude, accuracy });
 
-          // Fetch human-readable address using Google Maps API
-          const googleApiKey = 'AIzaSyBNbZwQ5xuZqg5ariGiE__P2knhxpLcHhg'; // Replace with your Google Maps API key
-          const geocodeUrl = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${googleApiKey}`;
-
           try {
-            const response = await axios.get(geocodeUrl);
+            const response = await axios.get(
+              `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=YOUR_GOOGLE_API_KEY`
+            );
             const address = response.data.results[0]?.formatted_address || 'Address not available';
             setCurrentLocation((prev) => ({ ...prev, address }));
           } catch (error) {
@@ -64,14 +63,9 @@ const Dashboard = () => {
           console.error('Geolocation error:', error.message);
           setLocationError('Unable to fetch location.');
         },
-        {
-          enableHighAccuracy: true,
-          timeout: 10000,
-          maximumAge: 0,
-        }
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
       );
     } else {
-      console.error('Geolocation not supported by your browser.');
       setLocationError('Geolocation not supported by your browser.');
     }
   };
@@ -93,9 +87,12 @@ const Dashboard = () => {
         toast.warning(`Order ${orderId} rejected!`);
       }
 
+      // Update button states after action
       setOrders((prevOrders) =>
         prevOrders.map((order) =>
-          order.id === orderId ? { ...order, status: action === 'accept' ? 'Accepted' : 'Rejected' } : order
+          order.order_id === orderId
+            ? { ...order, disableButtons: true } // Disable buttons for this order
+            : order
         )
       );
     } catch (err) {
@@ -139,29 +136,31 @@ const Dashboard = () => {
           {orders.length > 0 ? (
             <ul style={styles.orderList}>
               {orders.map((order) => (
-                <li key={order.id} style={styles.orderItem}>
-                  <p><strong>Order ID:</strong> {order.id}</p>
+                <li key={order.order_id} style={styles.orderItem}>
+                  <p><strong>Order Code:</strong> {order.order_code}</p>
+                  <p><strong>Order ID:</strong> {order.order_id}</p>
                   <p><strong>Address:</strong> {order.address}</p>
+                  <p><strong>Status:</strong> {order.order_status}</p>
                   <p><strong>Pickup Date:</strong> {order.pick_date}</p>
                   <p><strong>Pickup Slot:</strong> {order.pick_hour}</p>
                   <button
-                    onClick={() => handleAction(order.id, 'accept')}
-                    disabled={order.status === 'Accepted' || order.status === 'Rejected'}
+                    onClick={() => handleAction(order.order_id, 'accept')}
+                    disabled={order.disableButtons}
                     style={{
                       ...styles.acceptButton,
-                      cursor: order.status === 'Accepted' || order.status === 'Rejected' ? 'not-allowed' : 'pointer',
-                      backgroundColor: order.status === 'Accepted' || order.status === 'Rejected' ? '#ccc' : '#28a745',
+                      cursor: order.disableButtons ? 'not-allowed' : 'pointer',
+                      backgroundColor: order.disableButtons ? '#ccc' : '#28a745',
                     }}
                   >
                     Accept Pickup
                   </button>
                   <button
-                    onClick={() => handleAction(order.id, 'reject')}
-                    disabled={order.status === 'Accepted' || order.status === 'Rejected'}
+                    onClick={() => handleAction(order.order_id, 'reject')}
+                    disabled={order.disableButtons}
                     style={{
                       ...styles.rejectButton,
-                      cursor: order.status === 'Accepted' || order.status === 'Rejected' ? 'not-allowed' : 'pointer',
-                      backgroundColor: order.status === 'Accepted' || order.status === 'Rejected' ? '#ccc' : '#dc3545',
+                      cursor: order.disableButtons ? 'not-allowed' : 'pointer',
+                      backgroundColor: order.disableButtons ? '#ccc' : '#dc3545',
                     }}
                   >
                     Reject Pickup

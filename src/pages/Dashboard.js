@@ -43,30 +43,48 @@ const Dashboard = () => {
   }, [navigate]);
 
   const trackLiveLocation = () => {
-    if (navigator.geolocation) {
-      navigator.geolocation.watchPosition(
-        async (position) => {
-          const { latitude, longitude, accuracy } = position.coords;
-          setCurrentLocation({ latitude, longitude, accuracy });
-
-          try {
-            const response = await axios.get(
-              `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=YOUR_GOOGLE_API_KEY`
-            );
-            const address = response.data.results[0]?.formatted_address || 'Address not available';
-            setCurrentLocation((prev) => ({ ...prev, address }));
-          } catch (error) {
-            console.error('Error fetching address:', error.message);
-          }
-        },
-        (error) => {
-          console.error('Geolocation error:', error.message);
-          setLocationError('Unable to fetch location.');
-        },
-        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
-      );
-    } else {
+    if (!navigator.geolocation) {
       setLocationError('Geolocation not supported by your browser.');
+      return;
+    }
+
+    // Immediate fetch using getCurrentPosition
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        const { latitude, longitude, accuracy } = position.coords;
+        updateLocation(latitude, longitude, accuracy);
+      },
+      (error) => {
+        console.error('Geolocation error:', error.message);
+        setLocationError('Unable to fetch location.');
+      },
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+    );
+
+    // Continuous tracking using watchPosition
+    navigator.geolocation.watchPosition(
+      (position) => {
+        const { latitude, longitude, accuracy } = position.coords;
+        updateLocation(latitude, longitude, accuracy);
+      },
+      (error) => {
+        console.error('Geolocation error:', error.message);
+        setLocationError('Unable to fetch location.');
+      },
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+    );
+  };
+
+  const updateLocation = async (latitude, longitude, accuracy) => {
+    try {
+      const response = await axios.get(
+        `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=YOUR_GOOGLE_API_KEY`
+      );
+      const address = response.data.results[0]?.formatted_address || 'Address not available';
+      setCurrentLocation({ latitude, longitude, accuracy, address });
+    } catch (error) {
+      console.error('Error fetching address:', error.message);
+      setCurrentLocation({ latitude, longitude, accuracy, address: 'Unable to fetch address' });
     }
   };
 

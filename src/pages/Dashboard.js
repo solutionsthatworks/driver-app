@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { fetchDriverOrders, acceptOrderPickup, rejectOrderPickup } from "../services/api";
+import { fetchDriverOrders } from "../services/api";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -32,11 +32,17 @@ const Dashboard = () => {
           (order) =>
             order.order_status === "Pickup Scheduled" ||
             order.order_status === "Driver En Route for Pickup" ||
-            order.order_status === "Picked Up"
+            order.order_status === "Picked Up" ||
+            order.order_status === "Delivery Scheduled" ||
+            order.order_status === "Driver En Route for Delivery" ||
+            order.order_status === "Delivery Picked Up"
         );
         const updatedOrders = filteredOrders.map((order) => ({
           ...order,
           showPickUpButton: order.order_status === "Driver En Route for Pickup",
+          showDropToShopButton: order.order_status === "Picked Up",
+          showDeliveryPickupButton: order.order_status === "Driver En Route for Delivery",
+          showDeliveryCompleteButton: order.order_status === "Delivery Picked Up",
         }));
         setOrders(updatedOrders || []);
         trackLiveLocation();
@@ -88,22 +94,58 @@ const Dashboard = () => {
     navigate("/");
   };
 
-  const handleAction = async (orderId, action) => {
+  const handleAction = async (orderId, action, orderType) => {
     const token = localStorage.getItem("token");
     try {
+      let apiEndpoint = "";
+      let successMessage = "";
+
       if (action === "accept") {
-        await acceptOrderPickup(token, orderId);
-        toast.success(`Order ${orderId} accepted for pickup!`);
-        setOrders((prevOrders) =>
-          prevOrders.map((order) =>
-            order.order_id === orderId
-              ? { ...order, order_status: "Driver En Route for Pickup", showPickUpButton: true }
-              : order
-          )
-        );
+        if (orderType === "pickup") {
+          apiEndpoint = `http://localhost/laundry/public/api/driver/orders/${orderId}/accept-pickup`;
+          successMessage = `Order ${orderId} accepted for pickup!`;
+        } else if (orderType === "delivery") {
+          apiEndpoint = `http://localhost/laundry/public/api/driver/orders/${orderId}/accept-delivery`;
+          successMessage = `Order ${orderId} accepted for delivery!`;
+        }
       } else if (action === "reject") {
-        await rejectOrderPickup(token, orderId);
-        toast.warning(`Order ${orderId} rejected!`);
+        if (orderType === "pickup") {
+          apiEndpoint = `http://localhost/laundry/public/api/driver/orders/${orderId}/reject-pickup`;
+          successMessage = `Order ${orderId} rejected for pickup!`;
+        } else if (orderType === "delivery") {
+          apiEndpoint = `http://localhost/laundry/public/api/driver/orders/${orderId}/reject-delivery`;
+          successMessage = `Order ${orderId} rejected for delivery!`;
+        }
+      }
+
+      if (!apiEndpoint) {
+        throw new Error("Invalid action or order type.");
+      }
+
+      await axios.post(apiEndpoint, {}, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      toast.success(successMessage);
+
+      setOrders((prevOrders) =>
+        prevOrders.map((order) =>
+          order.order_id === orderId
+            ? {
+                ...order,
+                order_status: action === "accept"
+                  ? orderType === "pickup"
+                    ? "Driver En Route for Pickup"
+                    : "Driver En Route for Delivery"
+                  : order.order_status,
+                showPickUpButton: orderType === "pickup" && action === "accept",
+                showDeliveryPickupButton: orderType === "delivery" && action === "accept",
+              }
+            : order
+        )
+      );
+
+      if (action === "reject") {
         setOrders((prevOrders) => prevOrders.filter((order) => order.order_id !== orderId));
       }
     } catch (err) {
@@ -152,7 +194,7 @@ const Dashboard = () => {
     }
   };
 
-  const handleUploadPhoto = async () => {
+  const handleUploadPhoto = async (orderId, nextStatus) => {
     if (!capturedImage) {
       toast.error("No image to upload.");
       return;
@@ -164,13 +206,13 @@ const Dashboard = () => {
       return;
     }
 
-    const blob = await fetch(capturedImage).then((res) => res.blob()); // Convert base64 to blob
+    const blob = await fetch(capturedImage).then((res) => res.blob());
     const formData = new FormData();
-    formData.append("image", blob, `order-${uploadingOrderId}.jpg`);
+    formData.append("image", blob, `status-update-${orderId}.jpg`);
 
     try {
-      const response = await axios.post(
-        `http://localhost/laundry/public/api/driver/orders/${uploadingOrderId}/upload-photo`,
+      await axios.post(
+        `http://localhost/laundry/public/api/driver/orders/${orderId}/upload-photo`,
         formData,
         {
           headers: {
@@ -179,17 +221,26 @@ const Dashboard = () => {
           },
         }
       );
-      toast.success("Photo uploaded successfully!");
-      setCapturedImage(null);
 
-      // Ask for confirmation to mark as picked up
-      const confirmPickup = window.confirm(
-        "Photo uploaded successfully. Would you like to mark this order as 'Picked Up'?"
+      toast.success("Photo uploaded successfully!");
+
+      const confirmNextStatus = window.confirm(
+        `Photo uploaded successfully. Would you like to mark this order as '${nextStatus}'?`
       );
-      if (confirmPickup) {
-        handleMarkPickedUp(uploadingOrderId);
+
+      if (confirmNextStatus) {
+        if (nextStatus === "Picked Up") {
+          handleMarkPickedUp(orderId);
+        } else if (nextStatus === "Dropped in Shop") {
+          handleMarkDroppedInShop(orderId);
+        } else if (nextStatus === "Delivery Picked Up") {
+          handleMarkDeliveryPickedUp(orderId);
+        } else if (nextStatus === "Delivered") {
+          handleMarkDelivered(orderId);
+        }
       }
 
+      setCapturedImage(null);
       setUploadingOrderId(null);
     } catch (error) {
       console.error("Error uploading photo:", error.response?.data || error.message);
@@ -200,116 +251,185 @@ const Dashboard = () => {
   const handleMarkPickedUp = async (orderId) => {
     const token = localStorage.getItem("token");
     try {
-      const response = await axios.post(
+      await axios.post(
         `http://localhost/laundry/public/api/driver/orders/${orderId}/mark-picked-up`,
         {},
         {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      toast.success(response.data.message);
+      toast.success("Order marked as Picked Up.");
       setOrders((prevOrders) =>
         prevOrders.map((order) =>
           order.order_id === orderId
-            ? { ...order, order_status: "Picked Up", showPickUpButton: false }
+            ? { ...order, order_status: "Picked Up", showPickUpButton: false, showDropToShopButton: true }
             : order
         )
       );
     } catch (err) {
-      console.error("Error marking order as picked up:", err.message);
-      toast.error("Failed to mark order as picked up. Please try again.");
+      console.error("Error marking order as Picked Up:", err.message);
+      toast.error("Failed to mark order as Picked Up. Please try again.");
+    }
+  };
+
+  const handleMarkDroppedInShop = async (orderId) => {
+    const token = localStorage.getItem("token");
+    try {
+      await axios.post(
+        `http://localhost/laundry/public/api/driver/orders/${orderId}/mark-dropped-in-shop`,
+        {},
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      toast.success("Order marked as Dropped in Shop.");
+      setOrders((prevOrders) =>
+        prevOrders.map((order) =>
+          order.order_id === orderId
+            ? { ...order, order_status: "Dropped in Shop", showDropToShopButton: false }
+            : order
+        )
+      );
+    } catch (err) {
+      console.error("Error marking order as Dropped in Shop:", err.message);
+      toast.error("Failed to mark order as Dropped in Shop. Please try again.");
+    }
+  };
+
+  const handleMarkDeliveryPickedUp = async (orderId) => {
+    const token = localStorage.getItem("token");
+    try {
+      await axios.post(
+        `http://localhost/laundry/public/api/driver/orders/${orderId}/mark-delivery-picked-up`,
+        {},
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      toast.success("Order marked as Delivery Picked Up.");
+      setOrders((prevOrders) =>
+        prevOrders.map((order) =>
+          order.order_id === orderId
+            ? { ...order, order_status: "Delivery Picked Up", showDeliveryPickupButton: false, showDeliveryCompleteButton: true }
+            : order
+        )
+      );
+    } catch (err) {
+      console.error("Error marking order as Delivery Picked Up:", err.message);
+      toast.error("Failed to mark order as Delivery Picked Up. Please try again.");
+    }
+  };
+
+  const handleMarkDelivered = async (orderId) => {
+    const token = localStorage.getItem("token");
+    try {
+      await axios.post(
+        `http://localhost/laundry/public/api/driver/orders/${orderId}/mark-delivered`,
+        {},
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      toast.success("Order marked as Delivered.");
+      setOrders((prevOrders) =>
+        prevOrders.map((order) =>
+          order.order_id === orderId
+            ? { ...order, order_status: "Delivered", showDeliveryCompleteButton: false }
+            : order
+        )
+      );
+    } catch (err) {
+      console.error("Error marking order as Delivered:", err.message);
+      toast.error("Failed to mark order as Delivered. Please try again.");
     }
   };
 
   return (
-    <div style={styles.container}>
-      <h1 style={styles.header}>Driver Dashboard</h1>
-
-      <div style={styles.locationBox}>
-        <h2>Current Location</h2>
-        {currentLocation ? (
-          <p>
-            <strong>Address:</strong> {currentLocation.address || "Fetching address..."}
-          </p>
-        ) : (
-          <p>Fetching location...</p>
-        )}
-      </div>
-
-      {loading ? (
-        <p>Loading orders...</p>
-      ) : orders.length > 0 ? (
-        <ul style={styles.orderList}>
-          {orders.map((order) => (
-            <li key={order.order_id} style={styles.orderItem}>
-              <p>
-                <strong>Order Code:</strong> {order.order_code}
-              </p>
-              <p>
-                <strong>Address:</strong> {order.address}
-              </p>
-              <p>
-                <strong>Status:</strong> {order.order_status}
-              </p>
-              {order.showPickUpButton && (
-                <button
-                  style={styles.pickUpButton}
-                  onClick={() => handleMarkPickedUp(order.order_id)}
-                >
-                  Mark as Picked Up
+    <div>
+      <h1>Driver Dashboard</h1>
+      <ul>
+        {orders.map((order) => (
+          <li key={order.order_id}>
+            <p>{order.order_code}</p>
+            <p>{order.address}</p>
+            <p>{order.order_status}</p>
+            {order.showPickUpButton && (
+              <>
+                <button onClick={() => handleCapturePhoto(order.order_id)}>
+                  Capture Photo before Pickup
                 </button>
-              )}
-              {order.order_status === "Driver En Route for Pickup" && (
-                <>
-                  <button
-                    style={styles.captureButton}
-                    onClick={() => handleCapturePhoto(order.order_id)}
-                  >
-                    Capture Photo
+                {capturedImage && uploadingOrderId === order.order_id && (
+                  <button onClick={() => handleUploadPhoto(order.order_id, "Picked Up")}>
+                    Upload and Mark as Picked Up
                   </button>
-                </>
-              )}
-              {order.order_status === "Pickup Scheduled" && (
-                <>
-                  <button
-                    style={styles.acceptButton}
-                    onClick={() => handleAction(order.order_id, "accept")}
-                  >
-                    Accept
+                )}
+              </>
+            )}
+            {order.showDropToShopButton && (
+              <>
+                <button onClick={() => handleCapturePhoto(order.order_id)}>
+                  Capture Photo after Drop to Shop
+                </button>
+                {capturedImage && uploadingOrderId === order.order_id && (
+                  <button onClick={() => handleUploadPhoto(order.order_id, "Dropped in Shop")}>
+                    Upload and Mark as Dropped in Shop
                   </button>
-                  <button
-                    style={styles.rejectButton}
-                    onClick={() => handleAction(order.order_id, "reject")}
-                  >
-                    Reject
+                )}
+              </>
+            )}
+            {order.showDeliveryPickupButton && (
+              <>
+                <button onClick={() => handleCapturePhoto(order.order_id)}>
+                  Capture Photo before Delivery Pickup
+                </button>
+                {capturedImage && uploadingOrderId === order.order_id && (
+                  <button onClick={() => handleUploadPhoto(order.order_id, "Delivery Picked Up")}>
+                    Upload and Mark as Delivery Picked Up
                   </button>
-                </>
-              )}
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <p>No orders available.</p>
-      )}
-
+                )}
+              </>
+            )}
+            {order.showDeliveryCompleteButton && (
+              <>
+                <button onClick={() => handleCapturePhoto(order.order_id)}>
+                  Capture Photo before Delivery Completion
+                </button>
+                {capturedImage && uploadingOrderId === order.order_id && (
+                  <button onClick={() => handleUploadPhoto(order.order_id, "Delivered")}>
+                    Upload and Mark as Delivered
+                  </button>
+                )}
+              </>
+            )}
+            {order.order_status === "Pickup Scheduled" && (
+              <>
+                <button onClick={() => handleAction(order.order_id, "accept", "pickup")}>
+                  Accept Pickup
+                </button>
+                <button onClick={() => handleAction(order.order_id, "reject", "pickup")}>
+                  Reject Pickup
+                </button>
+              </>
+            )}
+            {order.order_status === "Delivery Scheduled" && (
+              <>
+                <button onClick={() => handleAction(order.order_id, "accept", "delivery")}>
+                  Accept Delivery
+                </button>
+                <button onClick={() => handleAction(order.order_id, "reject", "delivery")}>
+                  Reject Delivery
+                </button>
+              </>
+            )}
+          </li>
+        ))}
+      </ul>
       {showCamera && (
-        <div style={styles.cameraBox}>
-          <video ref={videoRef} style={styles.video} />
-          <button onClick={handleTakePhoto} style={styles.captureButton}>
-            Take Photo
-          </button>
-        </div>
-      )}
-
-      {capturedImage && (
         <div>
-          <img src={capturedImage} alt="Captured" style={styles.capturedImage} />
-          <button onClick={handleUploadPhoto} style={styles.uploadButton}>
-            Upload Photo
-          </button>
+          <video ref={videoRef} />
+          <button onClick={handleTakePhoto}>Take Photo</button>
         </div>
       )}
-
       <canvas ref={canvasRef} style={{ display: "none" }} />
     </div>
   );
@@ -321,14 +441,12 @@ const styles = {
   locationBox: { padding: "10px", marginBottom: "20px", backgroundColor: "#f0f0f0" },
   orderList: { listStyleType: "none", padding: 0 },
   orderItem: { padding: "10px", marginBottom: "10px", backgroundColor: "#e6e6e6" },
-  pickUpButton: { backgroundColor: "#007BFF", color: "#fff", padding: "10px", borderRadius: "5px" },
   captureButton: { backgroundColor: "#28A745", color: "#fff", padding: "10px", borderRadius: "5px" },
+  uploadButton: { backgroundColor: "#007BFF", color: "#fff", padding: "10px", borderRadius: "5px" },
   acceptButton: { backgroundColor: "#28A745", color: "#fff", padding: "10px", borderRadius: "5px" },
   rejectButton: { backgroundColor: "#DC3545", color: "#fff", padding: "10px", borderRadius: "5px" },
-  uploadButton: { backgroundColor: "#007BFF", color: "#fff", padding: "10px", borderRadius: "5px" },
   cameraBox: { textAlign: "center", marginTop: "20px" },
   video: { width: "100%", height: "auto", marginBottom: "10px" },
-  capturedImage: { width: "100%", marginTop: "10px" },
 };
 
 export default Dashboard;

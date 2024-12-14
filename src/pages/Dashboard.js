@@ -5,9 +5,11 @@ import { fetchDriverOrders } from "../services/api";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
+
 const Dashboard = () => {
   const [orders, setOrders] = useState([]);
   const [currentLocation, setCurrentLocation] = useState(null);
+  const [currentView, setCurrentView] = useState("active"); // Toggle between active and processed
   const [loading, setLoading] = useState(true);
   const [capturedImage, setCapturedImage] = useState(null);
   const [uploadingOrderId, setUploadingOrderId] = useState(null);
@@ -16,17 +18,82 @@ const Dashboard = () => {
   const canvasRef = useRef(null);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const validateTokenAndFetchOrders = async () => {
-      const token = localStorage.getItem("token");
 
-      if (!token) {
-        toast.error("Token not found. Redirecting to login.");
-        navigate("/");
-        return;
-      }
+  // Fetch active orders
+  const fetchActiveOrders = async () => {
+    const token = localStorage.getItem("token");
+    try {
 
+      const fetchedOrders = await fetchDriverOrders(token);
+
+      const filteredOrders = fetchedOrders.filter(
+        (order) =>
+
+          order.order_status === "Pickup Scheduled" ||
+          order.order_status === "Driver En Route for Pickup" ||
+          order.order_status === "Picked Up" ||
+          order.order_status === "Delivery Scheduled" ||
+          order.order_status === "Driver En Route for Delivery" ||
+          order.order_status === "Delivery Picked Up"
+      );
+
+      const updatedOrders = filteredOrders.map((order) => ({
+
+        ...order,
+        showPickUpButton: order.order_status === "Driver En Route for Pickup",
+        showDropToShopButton: order.order_status === "Picked Up",
+        showDeliveryPickupButton: order.order_status === "Driver En Route for Delivery",
+        showDeliveryCompleteButton: order.order_status === "Delivery Picked Up",
+      }));
+      setOrders(updatedOrders);
+    } catch (err) {
+      console.error("Error fetching active orders:", err.message);
+      toast.error("Failed to fetch active orders. Please try again.");
+    }
+  };
+
+    useEffect(() => {
+    // Fetch orders and group them by `order_id`
+    const fetchAndGroupOrders = async () => {
       try {
+        const token = localStorage.getItem("token");
+        const fetchedOrders = await fetchDriverOrders(token);
+        const groupedOrders = groupOrdersById(fetchedOrders);
+        setOrders(groupedOrders);
+      } catch (err) {
+        console.error("Error fetching orders:", err.message);
+        toast.error("Failed to fetch orders. Please try again.");
+      }
+    };
+
+    fetchAndGroupOrders();
+  }, []);
+
+  const groupOrdersById = (orders) => {
+    const grouped = orders.reduce((acc, order) => {
+      const { order_id, assigned_for } = order;
+      if (!acc[order_id]) {
+        acc[order_id] = { ...order, assigned_for: [] };
+      }
+      acc[order_id].assigned_for.push(assigned_for);
+      return acc;
+    }, {});
+    return Object.values(grouped);
+  };
+
+  
+// Fetch orders based on the current view
+  const fetchOrders = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      toast.error("Token not found. Redirecting to login.");
+      navigate("/");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      if (currentView === "active") {
         const fetchedOrders = await fetchDriverOrders(token);
         const filteredOrders = fetchedOrders.filter(
           (order) =>
@@ -44,18 +111,65 @@ const Dashboard = () => {
           showDeliveryPickupButton: order.order_status === "Driver En Route for Delivery",
           showDeliveryCompleteButton: order.order_status === "Delivery Picked Up",
         }));
-        setOrders(updatedOrders || []);
-        trackLiveLocation();
-      } catch (err) {
-        console.error("Error fetching orders:", err.message);
-        toast.error("Failed to fetch orders. Please try again.");
-      } finally {
-        setLoading(false);
+        setOrders(updatedOrders);
+      } else if (currentView === "processed") {
+        const response = await axios.get(
+          "http://localhost/laundry/public/api/driver/orders/processed",
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        setOrders(response.data.orders || []);
       }
-    };
+    } catch (error) {
+      console.error(`Error fetching ${currentView} orders:`, error.message);
+      toast.error(`Failed to fetch ${currentView} orders. Please try again.`);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    validateTokenAndFetchOrders();
-  }, [navigate]);
+
+  // Fetch processed orders
+  const fetchProcessedOrders = async () => {
+    const token = localStorage.getItem("token");
+    try {
+      const response = await axios.get(
+        "http://localhost/laundry/public/api/driver/orders/processed",
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setOrders(response.data.orders || []);
+    } catch (error) {
+      console.error("Error fetching processed orders:", error.message);
+      toast.error("Failed to fetch processed orders. Please try again.");
+    }
+  };
+
+
+    // Fetch orders on initial load
+  useEffect(() => {
+    fetchOrders();
+    trackLiveLocation();
+  }, []);
+
+    // Fetch orders on view change
+  useEffect(() => {
+    fetchOrders();
+  }, [currentView]);
+
+
+    // Fetch orders based on the current view
+  useEffect(() => {
+    const fetchOrders = async () => {
+      setLoading(true);
+      if (currentView === "active") {
+        await fetchActiveOrders();
+      } else {
+        await fetchProcessedOrders();
+      }
+      setLoading(false);
+    };
+    fetchOrders();
+  }, [currentView]);
+
 
   const trackLiveLocation = () => {
     if (!navigator.geolocation) {
@@ -347,14 +461,55 @@ const Dashboard = () => {
   return (
     <div>
       <h1>Driver Dashboard</h1>
-      <ul>
-        {orders.map((order) => (
-          <li key={order.order_id}>
-            <p>{order.order_code}</p>
-            <p>{order.address}</p>
-            <p>{order.order_status}</p>
+
+      {/* Menu */}
+     <div style={styles.menu}>
+     <button
+        style={styles.tab}
+        onClick={() => window.location.reload()} // Refresh the page
+      >
+        Active Orders
+      </button>
+      <button
+  style={styles.historyButton}
+  onClick={() => navigate("/order-history")}
+>
+  View Order History
+</button>
+      
+      <button style={styles.logoutButton} onClick={handleLogout}>
+        Logout
+      </button>
+    </div>
+
+
+      {/* Location Display */}
+      <div style={styles.locationBox}>
+        <h2>Current Location</h2>
+        {currentLocation ? (
+          <p>
+            <strong>Address:</strong> {currentLocation.address || "Fetching address..."}
+          </p>
+        ) : (
+          <p>Fetching location...</p>
+        )}
+      </div>
+
+
+
+      <ul style={styles.orderList}>
+        {orders.map((order, index) => (
+          <li key={order.order_id} style={styles.orderItem}>
+            <p><strong>Order Code:</strong> {order.order_code}</p>
+            <p><strong> Order Address:</strong> {order.address}</p>
+            
+            <p><strong>Order Status:</strong> {order.assign_for} </p>
+
+            
             {order.showPickUpButton && (
               <>
+                <p><strong>Pick-up Date:</strong> {order.pick_date}</p>
+                <p><strong>Pick-up Time:</strong> {order.pick_hour}</p>
                 <button onClick={() => handleCapturePhoto(order.order_id)}>
                   Capture Photo before Pickup
                 </button>
@@ -367,6 +522,8 @@ const Dashboard = () => {
             )}
             {order.showDropToShopButton && (
               <>
+                <p><strong>Pick-up Date:</strong> {order.pick_date}</p>
+                <p><strong>Pick-up Time:</strong> {order.pick_hour}</p>
                 <button onClick={() => handleCapturePhoto(order.order_id)}>
                   Capture Photo after Drop to Shop
                 </button>
@@ -379,6 +536,8 @@ const Dashboard = () => {
             )}
             {order.showDeliveryPickupButton && (
               <>
+                <p><strong>Pick-up Date:</strong> {order.delivery_date}</p>
+                <p><strong>Pick-up Time:</strong> {order.delivery_hour}</p>
                 <button onClick={() => handleCapturePhoto(order.order_id)}>
                   Capture Photo before Delivery Pickup
                 </button>
@@ -391,6 +550,8 @@ const Dashboard = () => {
             )}
             {order.showDeliveryCompleteButton && (
               <>
+                <p><strong>Pick-up Date:</strong> {order.delivery_date}</p>
+                <p><strong>Pick-up Time:</strong> {order.delivery_hour}</p>
                 <button onClick={() => handleCapturePhoto(order.order_id)}>
                   Capture Photo before Delivery Completion
                 </button>
@@ -403,6 +564,8 @@ const Dashboard = () => {
             )}
             {order.order_status === "Pickup Scheduled" && (
               <>
+                <p><strong>Pick-up Date:</strong> {order.pick_date}</p>
+                <p><strong>Pick-up Time:</strong> {order.pick_hour}</p>
                 <button onClick={() => handleAction(order.order_id, "accept", "pickup")}>
                   Accept Pickup
                 </button>
@@ -413,6 +576,8 @@ const Dashboard = () => {
             )}
             {order.order_status === "Delivery Scheduled" && (
               <>
+                <p><strong>Pick-up Date:</strong> {order.delivery_date}</p>
+                <p><strong>Pick-up Time:</strong> {order.delivery_hour}</p>
                 <button onClick={() => handleAction(order.order_id, "accept", "delivery")}>
                   Accept Delivery
                 </button>
@@ -438,6 +603,9 @@ const Dashboard = () => {
 const styles = {
   container: { padding: "10px" },
   header: { fontSize: "24px", fontWeight: "bold", textAlign: "center", marginBottom: "20px" },
+  menu: { display: "flex", justifyContent: "space-around", marginBottom: "20px" },
+  tab: { padding: "10px", cursor: "pointer" },
+  activeTab: { padding: "10px", cursor: "pointer", fontWeight: "bold", borderBottom: "2px solid black" },
   locationBox: { padding: "10px", marginBottom: "20px", backgroundColor: "#f0f0f0" },
   orderList: { listStyleType: "none", padding: 0 },
   orderItem: { padding: "10px", marginBottom: "10px", backgroundColor: "#e6e6e6" },
@@ -447,6 +615,7 @@ const styles = {
   rejectButton: { backgroundColor: "#DC3545", color: "#fff", padding: "10px", borderRadius: "5px" },
   cameraBox: { textAlign: "center", marginTop: "20px" },
   video: { width: "100%", height: "auto", marginBottom: "10px" },
+  homeButton: {   backgroundColor: "#FF7F50", color: "#fff", padding: "10px", borderRadius: "5px", cursor: "pointer", marginLeft: "5px", },
 };
 
 export default Dashboard;

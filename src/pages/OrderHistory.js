@@ -25,6 +25,7 @@ const OrderHistory = () => {
       );
 
       const orders = response.data.orders || [];
+      console.log("Fetched Orders Data:", orders); // Debugging log
       const grouped = groupOrdersByIdAndAssigned(orders);
       setGroupedOrders(grouped);
     } catch (error) {
@@ -74,6 +75,7 @@ const OrderHistory = () => {
       return acc;
     }, {});
 
+    console.log("Grouped Orders Object:", grouped); // Debugging log
     return Object.values(grouped);
   };
 

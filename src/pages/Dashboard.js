@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef  } from "react";
 import axios from "axios";
 import Select from "react-select";
 import GoogleMapComponent from "../components/GoogleMapComponent";
@@ -12,10 +12,18 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
   const navigate = useNavigate();
+  const videoRef = useRef(null);
+  const canvasRef = useRef(null);
+  const [isCameraOpen, setIsCameraOpen] = useState(false);
+  const [photo, setPhoto] = useState(null);
 
   useEffect(() => {
     fetchRoutes();
   }, []);
+
+  useEffect(() => {
+    setIsCameraOpen(false);
+  }, [selectedRoute]);
 
   // Fetch Driver Routes
   const fetchRoutes = async () => {
@@ -54,8 +62,6 @@ const Dashboard = () => {
 };
 
 
-
-
   // Handle Route Selection
   const handleRouteChange = (selectedOption) => {
     const selected = routes.find((route) => route.id === selectedOption.value);
@@ -88,39 +94,170 @@ const [startTime, setStartTime] = useState(null);
     }
   };
 
-  // Upload Photo (Pickup or Deliver)
-  const handleUploadAndAction = async (step, action) => {
-    const token = localStorage.getItem("token");
 
-    try {
-      setUploading(true);
-      const formData = new FormData();
-      formData.append("order_id", step.order_code);
-      formData.append("route_id", selectedRoute.id);
-      formData.append("action", action);
+// Open Camera and Capture Photo for Specific Step and Action
+// Open Camera and Capture Photo for Specific Step and Action
+const openCamera = (step, action) => {
+  setIsCameraOpen(true);
+  navigator.mediaDevices
+    .getUserMedia({ video: true })
+    .then((stream) => {
+      videoRef.current.srcObject = stream;
+      videoRef.current.play();
+    })
+    .catch((err) => {
+      toast.error("Unable to access camera");
+      console.error(err);
+    });
 
-      const response = await axios.post(
-        `http://localhost/laundry/public/api/driver/orders/${step.id}/upload-photo`,
-        formData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+  // Store step and action for later upload
+  setPhoto({ step, action });
+};
 
-      if (response.data.message === "Photo uploaded successfully") {
-        toast.success(`Photo uploaded and ${action} completed!`);
-        fetchRoutes();  // Refresh route details
-      } else {
-        toast.error("Failed to upload photo.");
-      }
-    } catch (error) {
-      toast.error("Error during upload.");
-    } finally {
-      setUploading(false);
+// Capture Photo and Confirm for Upload
+const capturePhoto = () => {
+  const context = canvasRef.current.getContext("2d");
+  context.drawImage(videoRef.current, 0, 0, canvasRef.current.width, canvasRef.current.height);
+  
+  canvasRef.current.toBlob((blob) => {
+    if (!blob) {
+      toast.error("Failed to capture photo.");
+      return;
     }
-  };
+
+    const file = new File([blob], "photo.png", { type: "image/png" });
+    setPhoto(file);  // Store photo as a real File object
+    setIsCameraOpen(false);
+    videoRef.current.srcObject.getTracks().forEach((track) => track.stop());
+
+    const isConfirmed = window.confirm("Do you want to upload this photo?");
+    if (isConfirmed) {
+      uploadPhoto(photo.step, photo.action, file);  // Pass file directly
+    }
+  }, "image/png");
+};
+
+// Upload the Captured Photo to the API
+const uploadPhoto = async (step, action, file) => {
+  const token = localStorage.getItem("token");
+
+  if (!file) {
+    toast.error("No photo captured!");
+    return;
+  }
+
+  try {
+    setUploading(true);
+    const formData = new FormData();
+    const orderId = step.order_code || step.id || step.order_id;
+
+    if (!orderId) {
+      toast.error("Order ID is missing!");
+      return;
+    }
+
+    formData.append("photo", file, "photo.png");  // Ensure correct key and value
+    formData.append("order_id", orderId);
+    formData.append("route_id", selectedRoute.id);
+    formData.append("action", action);
+
+    // Debugging Log
+    console.log("Form Data Before Upload:");
+    formData.forEach((value, key) => {
+      console.log(key, value);
+    });
+
+    const response = await axios.post(
+      `http://localhost/laundry/public/api/driver/orders/${orderId}/upload-photo`,
+      formData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+
+    if (response.data.message === "Photo uploaded successfully") {
+      toast.success("Photo uploaded successfully!");
+      fetchRoutes();
+      setPhoto(null);
+    } else {
+      toast.error("Failed to upload photo.");
+    }
+  } catch (error) {
+    toast.error("Error during upload.");
+    console.error("Upload Error:", error.response ? error.response.data : error.message);
+  } finally {
+    setUploading(false);
+  }
+};
+
+
+
+// Upload Photo for Pickup or Delivery
+const handleUploadAndAction = async (step, action) => {
+  if (
+    step.currentStatus === "Ready for Delivery" &&
+    step.nextStatus === "To be Delivered"
+  ) {
+    openCamera(step, action);
+    return;
+  }
+
+  const token = localStorage.getItem("token");
+
+  try {
+    setUploading(true);
+    const formData = new FormData();
+
+    // Use step.id or step.order_code if available
+    const orderId = step.order_code || step.id || step.order_id;
+
+    if (!orderId) {
+      toast.error("Order ID is missing!");
+      return;
+    }
+
+    formData.append("order_id", orderId);
+    formData.append("route_id", selectedRoute.id);
+    formData.append("action", action);
+
+    if (photo) {
+      const blob = await fetch(photo).then((res) => res.blob());
+      formData.append("image", photo, "photo.png");
+    }
+
+    console.log("Form Data Before Upload:");
+    formData.forEach((value, key) => {
+      console.log(key, value);
+    });
+
+    const response = await axios.post(
+      `http://localhost/laundry/public/api/driver/orders/${orderId}/upload-photo`,
+      formData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    if (response.data.message === "Photo uploaded successfully") {
+      toast.success("Photo uploaded successfully!");
+      fetchRoutes();
+    } else {
+      toast.error("Failed to upload photo.");
+    }
+  } catch (error) {
+    toast.error("Error during upload.");
+  } finally {
+    setUploading(false);
+  }
+};
+
+
+
 
  const handleCollectBags = async (step, index) => {
   const token = localStorage.getItem("token");
@@ -245,6 +382,21 @@ const renderActionButton = (step, index) => {
           <GoogleMapComponent route={selectedRoute} />
         </div>
       )}
+
+      {isCameraOpen && (
+  <div>
+    <video ref={videoRef} style={{ width: "100%" }} />
+    <button onClick={capturePhoto}>Capture Photo</button>
+    <canvas ref={canvasRef} style={{ display: "none" }} width="640" height="480"></canvas>
+  </div>
+)}
+
+{photo && (
+  <div>
+    <h4>Captured Photo:</h4>
+    <img src={photo} alt="Captured" style={{ width: "100%" }} />
+  </div>
+)}
 
       {selectedRoute && (
         <div style={styles.cardContainer}>

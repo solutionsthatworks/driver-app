@@ -198,8 +198,12 @@ const uploadPhoto = async (step, action, file) => {
 // Upload Photo for Pickup or Delivery
 const handleUploadAndAction = async (step, action) => {
   if (
-    step.currentStatus === "Ready for Delivery" &&
-    step.nextStatus === "To be Delivered"
+    step.currentStatus === "Delivery Scheduled" 
+    || step.currentStatus === "Driver En Route for Delivery" 
+    || step.currentStatus === "Pickup Scheduled" 
+    || step.currentStatus === "Driver En Route for Pickup" &&
+    step.nextStatus === "To be Delivered" 
+    || step.nextStatus === "Drop in Shop"
   ) {
     openCamera(step, action);
     return;
@@ -262,12 +266,27 @@ const handleUploadAndAction = async (step, action) => {
  const handleCollectBags = async (step, index) => {
   const token = localStorage.getItem("token");
 
+  // Prompt the driver to input bag and barcode count
+  const bagCount = prompt("Enter the number of bags collected:");
+  const barcodeCount = prompt("Enter the number of barcodes collected:");
+
+  // Validate input
+  if (!bagCount || !barcodeCount || isNaN(bagCount) || isNaN(barcodeCount)) {
+    toast.error("Please enter valid numbers for bags and barcodes.");
+    return;
+  }
+
   try {
     setUploading(true);
     const response = await axios.post(
-      `http://localhost/laundry/public/api/driver/orders/${step.id}/collect-bags`,
+      `http://localhost/laundry/public/api/driver/orders/${selectedRoute.id}/collect-bags`,
       {
         route_id: selectedRoute.id,
+        bag_count: bagCount,
+        barcode_count: barcodeCount,
+        activity_type: "Bag Collection",
+        description: `Collected ${bagCount} bags and ${barcodeCount} barcodes from shop.`,
+
       },
       {
         headers: { Authorization: `Bearer ${token}` },
@@ -280,7 +299,13 @@ const handleUploadAndAction = async (step, action) => {
       // Update sequence to reflect "Bags Collected"
       const updatedSequence = selectedRoute.sequence.map((s, i) => {
         if (i === index) {
-          return { ...s, currentStatus: "Bags Collected", bagsCollected: true };
+          return {
+            ...s,
+            currentStatus: "Bags Collected",
+            bagsCollected: true,
+            bag_count: bagCount,
+            barcode_count: barcodeCount,
+          };
         }
         return s;
       });
@@ -292,32 +317,84 @@ const handleUploadAndAction = async (step, action) => {
     }
   } catch (error) {
     toast.error("Error during bag collection.");
+    console.error("Bag Collection Error:", error.response ? error.response.data : error.message);
+
   } finally {
     setUploading(false);
   }
 };
 
+const completeRoute = async (routeId) => {
+  const allStepsComplete = selectedRoute.sequence.every((step) =>
+    ["Bags Collected", "Delivered", "Dropped in Shop"].includes(step.currentStatus)
+  );
+
+  if (!allStepsComplete) {
+    toast.error("All orders must be marked as 'Bags Collected', 'Delivered', or 'Dropped in Shop' before completing the route.");
+    return;
+  }
+
+  const token = localStorage.getItem("token");
+
+  try {
+    const response = await axios.post(
+      `http://localhost/laundry/public/api/driver/routes/${routeId}/complete`,
+      { is_complete: "done" },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    if (response.data.success) {
+      toast.success("Route marked as complete!");
+      fetchRoutes();  // Refresh routes after completion
+    } else {
+      toast.error("Failed to complete the route.");
+    }
+  } catch (error) {
+    toast.error("Error completing route.");
+    console.error("Complete Route Error:", error.response ? error.response.data : error.message);
+  }
+};
 
 
-// Render Button Based on Status and Step Type
 // Render Button Based on Status and Step Type
 const renderActionButton = (step, index) => {
   if (step.type === "Driver") return null;
 
-  // Do not show any buttons if the route is not accepted
+  // Exit early if route not accepted
   if (!selectedRoute.accepted) {
     return null;
   }
 
-  // Collect Bags Button Logic
-  if (
-    step.currentStatus === "Shop" &&
-    index === 1 &&
-    !step.bagsCollected
-  ) {
+  // Show completion icon if the item is delivered
+  if (step.currentStatus === "Delivered") {
+    return (
+      <p style={{ color: "#28A745", fontWeight: "bold" }}>
+        Delivered to Customer✔️
+      </p>
+    );
+  }
+
+  // Show completion icon if the item is delivered
+  if (step.currentStatus === "Dropped in Shop") {
+    return (
+      <p style={{ color: "#28A745", fontWeight: "bold" }}>
+        Dropped in Shop ✔️
+      </p>
+    );
+  }
+
+  let buttonLabel = "";
+  let buttonStyle = { ...styles.actionButton };
+
+  // Collect Bags from Shop
+  if (step.currentStatus === "Shop" && index === 1 && !step.bagsCollected) {
     return (
       <button
-        style={{ ...styles.actionButton, backgroundColor: "#DC3545" }}  // Red for Shop
+        style={{ ...styles.actionButton, backgroundColor: "#DC3545" }}
         onClick={() => handleCollectBags(step, index)}
         disabled={uploading}
       >
@@ -326,26 +403,59 @@ const renderActionButton = (step, index) => {
     );
   }
 
-  // Show collected status if bags are collected
+  // Display bag collection status
   if (step.bagsCollected) {
-    return <p style={{ color: "#28A745" }}>Bags Collected ✔️</p>;
+    return (
+      <p style={{ color: "#28A745" }}>
+        Bags Collected ✔️ <br />
+        Bags: {step.bag_count || "N/A"}, Barcodes: {step.barcode_count || "N/A"}
+      </p>
+    );
   }
 
-  // Other Button Logic (Delivery or Pickup)
-  const buttonLabel =
-    step.currentStatus === "Ready for Delivery"
-      ? "Pick-up from shop and Upload Live Photo"
-      : "Pick-up OR Drop-in and Upload Live Photo";
+  // Upload and Mark as Picked from Customer
+  if (step.currentStatus === "Order Placed") {
+    buttonLabel = "Upload Live Photo and Mark as Ready for Pickup";
+    buttonStyle.backgroundColor = "#17A2B8";
+  } 
+  else if (step.nextStatus === "End of Route") {
+    buttonLabel = "Mark route as completed";
+    buttonStyle.backgroundColor = "#6C757D";
 
-  const buttonStyle = {
-    ...styles.actionButton,
-    backgroundColor:
-      step.currentStatus === "Ready for Delivery"
-        ? "#28A745"
-        : step.currentStatus === "Shop"
-        ? "#DC3545"
-        : "#007BFF",
-  };
+    return (
+      <button
+        style={buttonStyle}
+        onClick={() => completeRoute(selectedRoute.id)}  // Call the complete route function
+        disabled={uploading}
+      >
+        {uploading ? "Processing..." : buttonLabel}
+      </button>
+    );
+  } 
+  else if (step.currentStatus === "Driver En Route for Delivery") {
+    buttonLabel = "Upload live photo before marking Order as Delivered";
+    buttonStyle.backgroundColor = "#28A745";
+  } 
+  else if (step.currentStatus === "Ready for Delivery") {
+    buttonLabel = "Upload Live Photo and Pick-up from Shop";
+    buttonStyle.backgroundColor = "#28A745";
+  } 
+  else if (step.currentStatus === "Delivery Scheduled") {
+    buttonLabel = "Pickup Delivery, Upload Live Photo and Mark as Driver En Route for Pickup";
+    buttonStyle.backgroundColor = "#28A745";
+  }
+  else if (step.currentStatus === "Pickup Scheduled") {
+    buttonLabel = "Upload live photo before Order Pickup from Customer";
+    buttonStyle.backgroundColor = "#17A2B8";
+  } 
+  else if (step.currentStatus === "Picked Up") {
+    buttonLabel = "Upload live photo  before dropping Order in Shop";
+    buttonStyle.backgroundColor = "#D22B2B";
+  } 
+  else {
+    buttonLabel = "Upload Live Photo and Pick-up from Customer";
+    buttonStyle.backgroundColor = "#007BFF";
+  }
 
   return (
     <button
@@ -357,6 +467,7 @@ const renderActionButton = (step, index) => {
     </button>
   );
 };
+
 
 
   return (
@@ -431,6 +542,7 @@ const renderActionButton = (step, index) => {
               ? "Collect Bags and Bar Codes from Shop"
               : step.currentStatus
           }</p>
+          
           <p><strong>Next Step:</strong> {step.nextStatus || "N/A"}</p>
           <p><strong>Distance:</strong> {step.distance || "N/A"} Miles</p>
           <p><strong>Duration:</strong> {step.duration || "N/A"} min</p>

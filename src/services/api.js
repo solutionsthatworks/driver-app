@@ -95,4 +95,12 @@ export const rejectOrderPickup = async (token, orderId) => {
   }
 };
 
+export const fetchDriverRoutes = async (token) => {
+   
+  const response = await API.get("/driver/routes", {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return response.data.routes;
+};
+
 export default API;

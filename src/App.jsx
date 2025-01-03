@@ -6,8 +6,6 @@ import DriverRoutes from "./pages/DriverRoutes";  // Import DriverRoutes
 import { ToastContainer } from "react-toastify";
 
 
-<ToastContainer position="top-right" autoClose={5000} />
-
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
   const token = localStorage.getItem('token'); // Check for auth token
@@ -50,8 +48,10 @@ const App = () => {
         />
         
         {/* Fallback Route */}
-        <Route path="*" element={<Navigate to="/" />} />
-      </Routes>
+              <Route path="*" element={<Navigate to="/" />} />
+
+          </Routes>
+          <ToastContainer position="top-right" autoClose={5000} />
     </Router>
   );
 };

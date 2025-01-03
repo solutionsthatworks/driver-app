@@ -1,12 +1,16 @@
-import React, { useState, useEffect, useRef  } from "react";
+import React, { useState, useEffect, useRef } from "react";
+import SidebarMenu from "../components/SidebarMenu";
 import axios from "axios";
 import Select from "react-select";
 import GoogleMapComponent from "../components/GoogleMapComponent";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { FaBars } from "react-icons/fa";
+
 
 const Dashboard = () => {
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [routes, setRoutes] = useState([]);
   const [selectedRoute, setSelectedRoute] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -15,7 +19,11 @@ const Dashboard = () => {
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   const [isCameraOpen, setIsCameraOpen] = useState(false);
-  const [photo, setPhoto] = useState(null);
+    const [photo, setPhoto] = useState(null);
+
+    const toggleMenu = () => {
+        setIsMenuOpen(!isMenuOpen);
+    };
 
   useEffect(() => {
     fetchRoutes();
@@ -324,32 +332,44 @@ const handleUploadAndAction = async (step, action) => {
   }
 };
 
-const completeRoute = async (routeId) => {
-  const allStepsComplete = selectedRoute.sequence.every((step) =>
-    ["Bags Collected", "Delivered", "Dropped in Shop"].includes(step.currentStatus)
-  );
+    // Function to check if route can be completed
+    const canCompleteRoute = () => {
+        if (!selectedRoute || !selectedRoute.sequence) return false;
 
-  if (!allStepsComplete) {
-    toast.error("All orders must be marked as 'Bags Collected', 'Delivered', or 'Dropped in Shop' before completing the route.");
-    return;
-  }
+        // Check if all steps meet the required status
+        return selectedRoute.sequence.every(
+            (step) =>
+                step.currentStatus === "Bags Collected" ||
+                step.currentStatus === "Delivered" ||
+                step.currentStatus === "Dropped in Shop" ||
+                step.currentStatus === "Shop" ||
+                step.currentStatus === "Driver"
+
+        );
+    };
+
+const completeRoute = async (routeId) => {
+   if (!selectedRoute) return;
 
   const token = localStorage.getItem("token");
 
   try {
-    const response = await axios.post(
-      `http://localhost/laundry/public/api/driver/routes/${routeId}/complete`,
-      { is_complete: "done" },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
+      const response = await axios.post(
+          `http://localhost/laundry/public/api/driver/routes/${selectedRoute.id}/complete`,
+          {},
+          {
+              headers: { Authorization: `Bearer ${token}` },
+          }
+      );
 
     if (response.data.success) {
       toast.success("Route marked as complete!");
-      fetchRoutes();  // Refresh routes after completion
+       // Refresh the routes after completion
+        await fetchRoutes();
+        // If no routes are available, reset the selected route
+        if (routes.length === 0) {
+            setSelectedRoute(null);
+        }
     } else {
       toast.error("Failed to complete the route.");
     }
@@ -422,15 +442,28 @@ const renderActionButton = (step, index) => {
     buttonLabel = "Mark route as completed";
     buttonStyle.backgroundColor = "#6C757D";
 
-    return (
-      <button
-        style={buttonStyle}
-        onClick={() => completeRoute(selectedRoute.id)}  // Call the complete route function
-        disabled={uploading}
-      >
-        {uploading ? "Processing..." : buttonLabel}
-      </button>
-    );
+      // Render the "Mark route as completed" button
+      return (
+          <div>
+              {selectedRoute && canCompleteRoute() && (
+                  <button
+                      onClick={() => completeRoute(selectedRoute.id)}
+                      style={{
+                          padding: "12px 20px",
+                          backgroundColor: "#28A745",
+                          color: "#fff",
+                          fontSize: "16px",
+                          border: "none",
+                          borderRadius: "5px",
+                          cursor: "pointer",
+                          marginTop: "20px",
+                      }}
+                  >
+                      Mark route as completed
+                  </button>
+              )}
+          </div>
+      );
   } 
   else if (step.currentStatus === "Driver En Route for Delivery") {
     buttonLabel = "Upload live photo before marking Order as Delivered";
@@ -468,102 +501,120 @@ const renderActionButton = (step, index) => {
   );
 };
 
+    return (
+        <div style={styles.container}>
+            <SidebarMenu isOpen={isMenuOpen} toggleMenu={toggleMenu} />
+            
+            <header style={styles.header}>
+                <FaBars style={styles.menuIcon} onClick={toggleMenu} />
+                <h1>Driver Dashboard</h1>
+            </header>
 
+            {loading ? (
+                <p>Loading routes...</p>
+            ) : routes.length === 0 ? (
+                <p style={{ color: "#28A745", fontSize: "18px", marginTop: "20px" }}>
+                    No active routes available. All routes are completed!
+                </p>
+            ) : (
+                <Select
+                    options={routes.map((route) => ({
+                        value: route.id,
+                        label: route.name,
+                    }))}
+                    onChange={handleRouteChange}
+                    placeholder="Select Route"
+                    styles={{ width: "100%" }}
+                />
+            )}
 
-  return (
-    <div style={styles.container}>
-      <h1>Driver Dashboard</h1>
+            {selectedRoute && (
+                <div style={styles.mapContainer}>
+                    <GoogleMapComponent route={selectedRoute} />
+                </div>
+            )}
 
-      {loading ? (
-        <p>Loading routes...</p>
-      ) : (
-        <Select
-          options={routes.map((route) => ({
-            value: route.id,
-            label: route.name,
-          }))}
-          onChange={handleRouteChange}
-          placeholder="Select Route"
-          styles={{ width: "100%" }}
-        />
-      )}
+            {isCameraOpen && (
+                <div>
+                    <video ref={videoRef} style={{ width: "100%" }} />
+                    <button onClick={capturePhoto}>Capture Photo</button>
+                    <canvas
+                        ref={canvasRef}
+                        style={{ display: "none" }}
+                        width="640"
+                        height="480"
+                    ></canvas>
+                </div>
+            )}
 
-      {selectedRoute && (
-        <div style={styles.mapContainer}>
-          <GoogleMapComponent route={selectedRoute} />
+            {photo && (
+                <div>
+                    <h4>Captured Photo:</h4>
+                    <img src={photo} alt="Captured" style={{ width: "100%" }} />
+                </div>
+            )}
+
+            {selectedRoute && (
+                <div style={styles.cardContainer}>
+                    <h3>Route Details</h3>
+                    {selectedRoute.is_accept === null && (
+                        <button
+                            style={styles.acceptButton}
+                            onClick={() => acceptRoute(selectedRoute.id)}
+                        >
+                            Accept Route
+                        </button>
+                    )}
+
+                    {selectedRoute.sequence.map((step, index) => (
+                        <div key={index} style={styles.card}>
+                            <div style={styles.cardHeader}>
+                                <span style={styles.step}>Step {index + 1}</span>
+                            </div>
+                            <div style={styles.cardBody}>
+                                {index === 0 && step.type === "Driver" ? (
+                                    <>
+                                        <p>
+                                            <strong>Order ID (Driver):</strong> {step.name || "N/A"}
+                                        </p>
+                                        <p>
+                                            <strong>Current Location:</strong> {step.address || "N/A"}
+                                        </p>
+                                    </>
+                                ) : (
+                                    <>
+                                        <p>
+                                            <strong>Address:</strong> {step.address || "N/A"}
+                                        </p>
+                                        <p>
+                                            <strong>Order ID:</strong> {step.name || "N/A"}
+                                        </p>
+                                        <p>
+                                            <strong>Current Status:</strong>{" "}
+                                            {step.currentStatus === "Shop" && index === 1
+                                                ? "Collect Bags and Bar Codes from Shop"
+                                                : step.currentStatus}
+                                        </p>
+                                        <p>
+                                            <strong>Next Step:</strong> {step.nextStatus || "N/A"}
+                                        </p>
+                                        <p>
+                                            <strong>Distance:</strong> {step.distance || "N/A"} Miles
+                                        </p>
+                                        <p>
+                                            <strong>Duration:</strong> {step.duration || "N/A"} min
+                                        </p>
+                                        {renderActionButton(step, index)}
+                                    </>
+                                )}
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            )}
         </div>
-      )}
+    );
 
-      {isCameraOpen && (
-  <div>
-    <video ref={videoRef} style={{ width: "100%" }} />
-    <button onClick={capturePhoto}>Capture Photo</button>
-    <canvas ref={canvasRef} style={{ display: "none" }} width="640" height="480"></canvas>
-  </div>
-)}
-
-{photo && (
-  <div>
-    <h4>Captured Photo:</h4>
-    <img src={photo} alt="Captured" style={{ width: "100%" }} />
-  </div>
-)}
-
-      {selectedRoute && (
-        <div style={styles.cardContainer}>
-          <h3>Route Details</h3>
-          {selectedRoute.is_accept === null && (
-  <button
-    style={styles.acceptButton}
-    onClick={() => acceptRoute(selectedRoute.id)}
-  >
-    Accept Route
-  </button>
-)}
-
-
-          {selectedRoute.sequence.map((step, index) => (
-  <div key={index} style={styles.card}>
-    <div style={styles.cardHeader}>
-      <span style={styles.step}>Step {index + 1}</span>
-    </div>
-    <div style={styles.cardBody}>
-      {index === 0 && step.type === "Driver" ? (
-        <>
-          <p><strong>Order ID (Driver):</strong> {step.name || "N/A"}</p>
-          <p><strong>Current Location:</strong> {step.address || "N/A"}</p>
-        </>
-      ) : (
-        <>
-          <p><strong>Address:</strong> {step.address || "N/A"}</p>
-          <p><strong>Order ID:</strong> {step.name || "N/A"}</p>
-          <p><strong>Current Status:</strong> {
-            step.currentStatus === "Shop" && index === 1
-              ? "Collect Bags and Bar Codes from Shop"
-              : step.currentStatus
-          }</p>
-          
-          <p><strong>Next Step:</strong> {step.nextStatus || "N/A"}</p>
-          <p><strong>Distance:</strong> {step.distance || "N/A"} Miles</p>
-          <p><strong>Duration:</strong> {step.duration || "N/A"} min</p>
-          
-          {/* Show the new Collect Bags button conditionally */}
-          {renderActionButton(step, index)}
-        </>
-      )}
-    </div>
-  </div>
-))}
-
-
-
-
-
-        </div>
-      )}
-
-    </div>
-  );
 };
 
 

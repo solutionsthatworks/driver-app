@@ -1,6 +1,6 @@
 {
   "name": "driver-app",
-  "homepage": "/laundryatyourdoor/driver-app",
+  "homepage": "/driver-app",
   "version": "0.1.0",
   "private": true,
   "dependencies": {

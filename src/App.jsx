@@ -14,7 +14,7 @@ const ProtectedRoute = ({ children }) => {
 
 const App = () => {
   return (
-    <Router basename="/laundryatyourdoor/driver-app">
+    <Router basename="/driver-app">
       <Routes>
         {/* Public Route */}
         <Route path="/" element={<Login />} />

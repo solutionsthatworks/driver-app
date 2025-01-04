@@ -7,10 +7,12 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { FaBars } from "react-icons/fa";
+import { fetchDriverRoutes, acceptRoute, uploadPhoto, collectBags, completeRoute as apiCompleteRoute  } from '../services/api';  // Import API functions
+
 
 
 const Dashboard = () => {
-    const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [routes, setRoutes] = useState([]);
   const [selectedRoute, setSelectedRoute] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -20,6 +22,8 @@ const Dashboard = () => {
   const canvasRef = useRef(null);
   const [isCameraOpen, setIsCameraOpen] = useState(false);
     const [photo, setPhoto] = useState(null);
+    const [startTime, setStartTime] = useState(null);
+
 
     const toggleMenu = () => {
         setIsMenuOpen(!isMenuOpen);
@@ -37,12 +41,9 @@ const Dashboard = () => {
   const fetchRoutes = async () => {
   const token = localStorage.getItem("token");
   try {
-    const response = await axios.get(
-      "http://localhost/laundry/public/api/driver/routes",
-      { headers: { Authorization: `Bearer ${token}` } }
-    );
+     const fetchedRoutes = await fetchDriverRoutes(token);
 
-    const parsedRoutes = response.data.routes.map((route) => {
+      const parsedRoutes = fetchedRoutes.map((route) => {
       const driverOrder = route.driverOrders?.[0] || {};  // Use driverOrders here
       return {
         ...route,
@@ -67,39 +68,31 @@ const Dashboard = () => {
   } finally {
     setLoading(false);
   }
-};
+    };
+
+    // Accept Route API Call
+    const handleAcceptRoute = async (routeId) => {
+        try {
+            const response = await acceptRoute(routeId);
+            
+
+            if (response) {
+                //toast.success("Route accepted successfully!");
+                setStartTime(Date.now());  // Capture start time
+                fetchRoutes();  // Refresh routes to reflect acceptance
+            } else {
+                toast.error("Failed to accept route.");
+            }
+        } catch (error) {
+            toast.error("Error accepting route.");
+        }
+    };
 
 
   // Handle Route Selection
   const handleRouteChange = (selectedOption) => {
     const selected = routes.find((route) => route.id === selectedOption.value);
     setSelectedRoute(selected);
-  };
-
-
-const [startTime, setStartTime] = useState(null);
-
-  // Accept Route API Call
-  const acceptRoute = async (routeId) => {
-    const token = localStorage.getItem("token");
-
-    try {
-      const response = await axios.post(
-        `http://localhost/laundry/public/api/driver/routes/${routeId}/accept`,
-        {},
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-
-      if (response.data.success) {
-        toast.success("Route accepted successfully!");
-        setStartTime(Date.now());  // Capture start time
-        fetchRoutes();  // Refresh routes to reflect acceptance
-      } else {
-        toast.error("Failed to accept route.");
-      }
-    } catch (error) {
-      toast.error("Error accepting route.");
-    }
   };
 
 
@@ -204,69 +197,58 @@ const uploadPhoto = async (step, action, file) => {
 
 
 // Upload Photo for Pickup or Delivery
-const handleUploadAndAction = async (step, action) => {
-  if (
-    step.currentStatus === "Delivery Scheduled" 
-    || step.currentStatus === "Driver En Route for Delivery" 
-    || step.currentStatus === "Pickup Scheduled" 
-    || step.currentStatus === "Driver En Route for Pickup" &&
-    step.nextStatus === "To be Delivered" 
-    || step.nextStatus === "Drop in Shop"
-  ) {
-    openCamera(step, action);
-    return;
-  }
+    const handleUploadAndAction = async (step, action) => {
+        if (
+            step.currentStatus === "Delivery Scheduled" ||
+            step.currentStatus === "Driver En Route for Delivery" ||
+            step.currentStatus === "Pickup Scheduled" ||
+            step.currentStatus === "Picked Up" ||
+            step.currentStatus === "Driver En Route for Pickup" &&
+            (step.nextStatus === "To be Delivered" || step.nextStatus === "Drop in Shop")
+        ) {
+            openCamera(step, action);
+            return;
+        }
 
-  const token = localStorage.getItem("token");
+        const token = localStorage.getItem("token");
 
-  try {
-    setUploading(true);
-    const formData = new FormData();
+        try {
+            setUploading(true);
 
-    // Use step.id or step.order_code if available
-    const orderId = step.order_code || step.id || step.order_id;
+            // Use step.id or step.order_code if available
+            const orderId = step.order_code || step.id || step.order_id;
 
-    if (!orderId) {
-      toast.error("Order ID is missing!");
-      return;
-    }
+            if (!orderId) {
+                toast.error("Order ID is missing!");
+                return;
+            }
 
-    formData.append("order_id", orderId);
-    formData.append("route_id", selectedRoute.id);
-    formData.append("action", action);
+            // Check if photo exists and is a File or Blob
+            if (photo instanceof Blob || photo instanceof File) {
+                const file = new File([photo], "photo.png", { type: "image/png" });
 
-    if (photo) {
-      const blob = await fetch(photo).then((res) => res.blob());
-      formData.append("image", photo, "photo.png");
-    }
+                console.log("Uploading photo for order:", orderId);
 
-    console.log("Form Data Before Upload:");
-    formData.forEach((value, key) => {
-      console.log(key, value);
-    });
+                // Call the API function to upload the photo
+                const response = await uploadPhoto(orderId, selectedRoute.id, file, action, token);
 
-    const response = await axios.post(
-      `http://localhost/laundry/public/api/driver/orders/${orderId}/upload-photo`,
-      formData,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
+                if (response.message === "Photo uploaded successfully") {
+                    toast.success("Photo uploaded successfully!");
+                    fetchRoutes();  // Refresh the routes
+                } else {
+                    toast.error("Failed to upload photo.");
+                }
+            } else {
+                toast.error("No valid photo available for upload.");
+            }
+        } catch (error) {
+            toast.error("Error during upload.");
+            console.error("Upload Error:", error);
+        } finally {
+            setUploading(false);
+        }
+    };
 
-    if (response.data.message === "Photo uploaded successfully") {
-      toast.success("Photo uploaded successfully!");
-      fetchRoutes();
-    } else {
-      toast.error("Failed to upload photo.");
-    }
-  } catch (error) {
-    toast.error("Error during upload.");
-  } finally {
-    setUploading(false);
-  }
-};
 
 
 
@@ -286,22 +268,11 @@ const handleUploadAndAction = async (step, action) => {
 
   try {
     setUploading(true);
-    const response = await axios.post(
-      `http://localhost/laundry/public/api/driver/orders/${selectedRoute.id}/collect-bags`,
-      {
-        route_id: selectedRoute.id,
-        bag_count: bagCount,
-        barcode_count: barcodeCount,
-        activity_type: "Bag Collection",
-        description: `Collected ${bagCount} bags and ${barcodeCount} barcodes from shop.`,
+      // Use the API function for bag collection
+    const data = await collectBags(selectedRoute.id, bagCount, barcodeCount, token);
 
-      },
-      {
-        headers: { Authorization: `Bearer ${token}` },
-      }
-    );
 
-    if (response.data.success) {
+      if (data.success) {
       toast.success("Bags and bar codes collected successfully!");
 
       // Update sequence to reflect "Bags Collected"
@@ -348,36 +319,35 @@ const handleUploadAndAction = async (step, action) => {
         );
     };
 
-const completeRoute = async (routeId) => {
-   if (!selectedRoute) return;
 
-  const token = localStorage.getItem("token");
+    const completeRoute = async () => {
+        if (!selectedRoute) return;
 
-  try {
-      const response = await axios.post(
-          `http://localhost/laundry/public/api/driver/routes/${selectedRoute.id}/complete`,
-          {},
-          {
-              headers: { Authorization: `Bearer ${token}` },
-          }
-      );
+        const token = localStorage.getItem("token");
 
-    if (response.data.success) {
-      toast.success("Route marked as complete!");
-       // Refresh the routes after completion
-        await fetchRoutes();
-        // If no routes are available, reset the selected route
-        if (routes.length === 0) {
-            setSelectedRoute(null);
+        try {
+            const response = await apiCompleteRoute(selectedRoute.id, token);
+
+            if (response && response.success) {
+                toast.success("Route marked as complete!");
+
+                // Refresh routes without full reload
+                await fetchRoutes();
+
+                // Reset selected route if no routes are left
+                if (routes.length === 1) {
+                    setSelectedRoute(null);
+                }
+            } else {
+                toast.error("Failed to complete the route.");
+            }
+        } catch (error) {
+            toast.error("Error completing route.");
+            console.error("Complete Route Error:", error);
         }
-    } else {
-      toast.error("Failed to complete the route.");
-    }
-  } catch (error) {
-    toast.error("Error completing route.");
-    console.error("Complete Route Error:", error.response ? error.response.data : error.message);
-  }
-};
+    };
+
+
 
 
 // Render Button Based on Status and Step Type
@@ -560,7 +530,7 @@ const renderActionButton = (step, index) => {
                     {selectedRoute.is_accept === null && (
                         <button
                             style={styles.acceptButton}
-                            onClick={() => acceptRoute(selectedRoute.id)}
+                            onClick={() => handleAcceptRoute(selectedRoute.id)}
                         >
                             Accept Route
                         </button>

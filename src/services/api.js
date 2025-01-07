@@ -8,6 +8,25 @@ const API = axios.create({
     baseURL: API_BASE_URL,  // Dynamic base URL
 });
 
+// Axios Response Interceptor
+API.interceptors.response.use(
+    (response) => response,  // Pass successful responses
+    (error) => {
+        if (error.response) {
+            if (error.response.status === 419 || error.response.status === 401) {
+                toast.error('Session expired. Redirecting to login...');
+                localStorage.removeItem('token');  // Clear any stored token
+                window.location.href = '/driver/login';   // Redirect to login page
+            } else {
+                toast.error(error.response.data.message || 'An error occurred.');
+            }
+        } else {
+            toast.error('Network error or server not reachable.');
+        }
+        return Promise.reject(error);
+    }
+);
+
 // Login API
 export const login = async (email, password) => {
     const response = await API.post('/driver/login', {

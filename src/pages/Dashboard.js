@@ -8,6 +8,7 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { FaBars } from "react-icons/fa";
 import { fetchDriverRoutes, acceptRoute, uploadPhoto, collectBags, completeRoute as apiCompleteRoute  } from '../services/api';  // Import API functions
+import CameraComponent from "../components/CameraComponent";
 
 
 
@@ -36,6 +37,13 @@ const Dashboard = () => {
   useEffect(() => {
     setIsCameraOpen(false);
   }, [selectedRoute]);
+
+    // Handle Photo Capture and Upload
+    const handlePhotoCaptured = (file, step, action) => {
+        // Ensure step and action are correctly set
+        setPhoto({ file, step, action });
+        uploadPhoto(step, action, file);
+    };
 
   // Fetch Driver Routes
   const fetchRoutes = async () => {
@@ -505,16 +513,11 @@ const renderActionButton = (step, index) => {
             )}
 
             {isCameraOpen && (
-                <div>
-                    <video ref={videoRef} style={{ width: "100%" }} />
-                    <button onClick={capturePhoto}>Capture Photo</button>
-                    <canvas
-                        ref={canvasRef}
-                        style={{ display: "none" }}
-                        width="640"
-                        height="480"
-                    ></canvas>
-                </div>
+                <CameraComponent
+                    step={photo?.step || null}
+          action={photo?.action || null}
+          onPhotoCaptured={handlePhotoCaptured}
+                />
             )}
 
             {photo && (

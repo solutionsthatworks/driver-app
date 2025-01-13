@@ -34,6 +34,12 @@ const Dashboard = () => {
     fetchRoutes();
   }, []);
 
+    useEffect(() => {
+        if (isCameraOpen) {
+            openCamera();
+        }
+    }, [isCameraOpen]);
+
   useEffect(() => {
     setIsCameraOpen(false);
   }, [selectedRoute]);
@@ -46,37 +52,37 @@ const Dashboard = () => {
     };
 
   // Fetch Driver Routes
-  const fetchRoutes = async () => {
-  const token = localStorage.getItem("token");
-  try {
-     const fetchedRoutes = await fetchDriverRoutes(token);
+    const fetchRoutes = async () => {
+        const token = localStorage.getItem("token");
+        try {
+            const fetchedRoutes = await fetchDriverRoutes(token);
 
-      const parsedRoutes = fetchedRoutes.map((route) => {
-      const driverOrder = route.driverOrders?.[0] || {};  // Use driverOrders here
-      return {
-        ...route,
-        sequence: route.sequence.map((step) => ({
-          ...step,
-          currentStatus: step.bagsCollected
-            ? "Bags Collected"
-            : step.currentStatus,
-        })),
-        order_id: driverOrder.order_id || null,
-        order_status: driverOrder.status || "N/A",
-        accepted: route.is_accept === 1,
-      };
-    });
+            const parsedRoutes = fetchedRoutes.map((route) => ({
+                ...route,
+                sequence: route.sequence.map((step) => ({
+                    ...step,
+                    currentStatus:
+                        step.bagsCollected && step.currentStatus === "Shop"
+                            ? "Bags Collected"
+                            : step.currentStatus,
+                    bag_count: step.bag_count || 0,
+                    barcode_count: step.barcode_count || 0,
+                })),
+                accepted: route.is_accept === 1,
+            }));
 
-    setRoutes(parsedRoutes);
-    if (parsedRoutes.length > 0) {
-      setSelectedRoute(parsedRoutes[0]);
-    }
-  } catch (error) {
-    toast.error("Failed to fetch routes");
-  } finally {
-    setLoading(false);
-  }
+            setRoutes(parsedRoutes);
+            if (parsedRoutes.length > 0) {
+                setSelectedRoute(parsedRoutes[0]);
+            }
+        } catch (error) {
+            toast.error("Failed to fetch routes");
+        } finally {
+            setLoading(false);
+        }
     };
+
+
 
     // Accept Route API Call
     const handleAcceptRoute = async (routeId) => {
@@ -105,102 +111,133 @@ const Dashboard = () => {
 
 
 // Open Camera and Capture Photo for Specific Step and Action
-// Open Camera and Capture Photo for Specific Step and Action
-const openCamera = (step, action) => {
-  setIsCameraOpen(true);
-  navigator.mediaDevices
-    .getUserMedia({ video: true })
-    .then((stream) => {
-      videoRef.current.srcObject = stream;
-      videoRef.current.play();
-    })
-    .catch((err) => {
-      toast.error("Unable to access camera");
-      console.error(err);
-    });
+    const openCamera = (step, action) => {
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+            toast.error("Camera access is not supported in this browser.");
+            console.error("MediaDevices or getUserMedia not available.");
+            return;
+        }
 
-  // Store step and action for later upload
-  setPhoto({ step, action });
-};
+        setIsCameraOpen(true);
 
-// Capture Photo and Confirm for Upload
-const capturePhoto = () => {
-  const context = canvasRef.current.getContext("2d");
-  context.drawImage(videoRef.current, 0, 0, canvasRef.current.width, canvasRef.current.height);
-  
-  canvasRef.current.toBlob((blob) => {
-    if (!blob) {
-      toast.error("Failed to capture photo.");
-      return;
-    }
+        navigator.mediaDevices
+            .getUserMedia({ video: true })
+            .then((stream) => {
+                if (!videoRef.current) {
+                    toast.error("Video element is unavailable.");
+                    return;
+                }
+                videoRef.current.srcObject = stream;
+                videoRef.current.play();
+            })
+            .catch((err) => {
+                toast.error("Unable to access the camera.");
+                console.error("Camera Error:", err);
+            });
 
-    const file = new File([blob], "photo.png", { type: "image/png" });
-    setPhoto(file);  // Store photo as a real File object
-    setIsCameraOpen(false);
-    videoRef.current.srcObject.getTracks().forEach((track) => track.stop());
+        // Store step and action for later use, validate step structure
+        if (!step || (!step.order_code && !step.id && !step.order_id)) {
+            console.error("Invalid step object passed to openCamera:", step);
+            toast.error("Step information is missing. Cannot proceed.");
+            return;
+        }
 
-    const isConfirmed = window.confirm("Do you want to upload this photo?");
-    if (isConfirmed) {
-      uploadPhoto(photo.step, photo.action, file);  // Pass file directly
-    }
-  }, "image/png");
-};
+        setPhoto({ step, action });
+    };
+
+    const capturePhoto = () => {
+        if (!canvasRef.current || !videoRef.current) {
+            toast.error("Camera or canvas element is not available.");
+            return;
+        }
+
+        const context = canvasRef.current.getContext("2d");
+        context.drawImage(videoRef.current, 0, 0, canvasRef.current.width, canvasRef.current.height);
+
+        canvasRef.current.toBlob(
+            (blob) => {
+                if (!blob) {
+                    toast.error("Failed to capture photo.");
+                    return;
+                }
+
+                const file = new File([blob], "photo.png", { type: "image/png" });
+                setIsCameraOpen(false);
+
+                // Stop the camera stream
+                if (videoRef.current?.srcObject) {
+                    videoRef.current.srcObject.getTracks().forEach((track) => track.stop());
+                }
+
+                if (!photo || !photo.step || !photo.action) {
+                    console.error("Photo or action details missing:", photo);
+                    toast.error("Failed to capture photo. Step or action is missing.");
+                    return;
+                }
+
+                const isConfirmed = window.confirm("Do you want to upload this photo?");
+                if (isConfirmed) {
+                    uploadPhoto(photo.step, photo.action, file);
+                }
+            },
+            "image/png"
+        );
+    };
+
 
 // Upload the Captured Photo to the API
-const uploadPhoto = async (step, action, file) => {
-  const token = localStorage.getItem("token");
+    const uploadPhoto = async (step, action, file) => {
+        const token = localStorage.getItem("token");
+        const API_BASE_URL = process.env.REACT_APP_API_BASE_URL; // Fetch base URL from .env
 
-  if (!file) {
-    toast.error("No photo captured!");
-    return;
-  }
+        if (!file) {
+            toast.error("No photo captured!");
+            return;
+        }
 
-  try {
-    setUploading(true);
-    const formData = new FormData();
-    const orderId = step.order_code || step.id || step.order_id;
+        try {
+            setUploading(true);
+            const formData = new FormData();
 
-    if (!orderId) {
-      toast.error("Order ID is missing!");
-      return;
-    }
+            // Validate step and order details
+            const orderId = step?.order_code || step?.id || step?.order_id;
+            if (!orderId) {
+                toast.error("Order ID is missing or invalid.");
+                console.error("Step object missing valid order details:", step);
+                return;
+            }
 
-    formData.append("photo", file, "photo.png");  // Ensure correct key and value
-    formData.append("order_id", orderId);
-    formData.append("route_id", selectedRoute.id);
-    formData.append("action", action);
+            formData.append("photo", file, "photo.png");
+            formData.append("order_id", orderId);
+            formData.append("route_id", selectedRoute?.id);
+            formData.append("action", action);
 
-    // Debugging Log
-    console.log("Form Data Before Upload:");
-    formData.forEach((value, key) => {
-      console.log(key, value);
-    });
+            const response = await axios.post(
+                `${API_BASE_URL}/driver/orders/${orderId}/upload-photo`,
+                formData,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        "Content-Type": "multipart/form-data",
+                    },
+                }
+            );
 
-    const response = await axios.post(
-      `http://localhost/laundry/public/api/driver/orders/${orderId}/upload-photo`,
-      formData,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "multipart/form-data",
-        },
-      }
-    );
-
-    if (response.data.message === "Photo uploaded successfully") {
-      toast.success("Photo uploaded successfully!");
-      fetchRoutes();
-      setPhoto(null);
-    } else {
-      toast.error("Failed to upload photo.");
-    }
-  } catch (error) {
-    toast.error("Error during upload.");
-    console.error("Upload Error:", error.response ? error.response.data : error.message);
-  } finally {
-    setUploading(false);
-  }
-};
+            if (response?.data?.message === "Photo uploaded successfully") {
+                toast.success("Photo uploaded successfully!");
+                fetchRoutes();
+                setPhoto(null);
+            } else {
+                toast.error("Failed to upload photo.");
+                console.error("Photo upload failed:", response.data);
+            }
+        } catch (error) {
+            toast.error("Error during upload.");
+            console.error("Upload Error:", error.response || error.message);
+        } finally {
+            setUploading(false);
+        }
+    };
 
 
 
@@ -358,126 +395,119 @@ const uploadPhoto = async (step, action, file) => {
 
 
 
-// Render Button Based on Status and Step Type
-const renderActionButton = (step, index) => {
-  if (step.type === "Driver") return null;
+    const renderActionButton = (step, index) => {
+        if (!step) {
+            console.error("Step object is missing or invalid:", step);
+            return null;
+        }
 
-  // Exit early if route not accepted
-  if (!selectedRoute.accepted) {
-    return null;
-  }
+        if (step.type === "Driver") return null; // Skip rendering for driver steps
 
-  // Show completion icon if the item is delivered
-  if (step.currentStatus === "Delivered") {
-    return (
-      <p style={{ color: "#28A745", fontWeight: "bold" }}>
-        Delivered to Customer✔️
-      </p>
-    );
-  }
+        // Exit early if route not accepted
+        if (!selectedRoute?.accepted) return null;
 
-  // Show completion icon if the item is delivered
-  if (step.currentStatus === "Dropped in Shop") {
-    return (
-      <p style={{ color: "#28A745", fontWeight: "bold" }}>
-        Dropped in Shop ✔️
-      </p>
-    );
-  }
+        // Handle statuses with fixed text (e.g., Delivered or Dropped in Shop)
+        const statusMessages = {
+            Delivered: "Delivered to Customer✔️",
+            "Dropped in Shop": "Dropped in Shop ✔️",
+            "Bags Collected": `Bags Collected ✔️ Bags: ${step.bag_count || "N/A"}, Barcodes: ${step.barcode_count || "N/A"}`,
+        };
 
-  let buttonLabel = "";
-  let buttonStyle = { ...styles.actionButton };
 
-  // Collect Bags from Shop
-  if (step.currentStatus === "Shop" && index === 1 && !step.bagsCollected) {
-    return (
-      <button
-        style={{ ...styles.actionButton, backgroundColor: "#DC3545" }}
-        onClick={() => handleCollectBags(step, index)}
-        disabled={uploading}
-      >
-        {uploading ? "Processing..." : "Collect Bags and Bar Codes from Shop"}
-      </button>
-    );
-  }
 
-  // Display bag collection status
-  if (step.bagsCollected) {
-    return (
-      <p style={{ color: "#28A745" }}>
-        Bags Collected ✔️ <br />
-        Bags: {step.bag_count || "N/A"}, Barcodes: {step.barcode_count || "N/A"}
-      </p>
-    );
-  }
+        if (statusMessages[step.currentStatus]) {
+            return (
+                <p style={{ color: "#28A745", fontWeight: "bold" }}>
+                    {statusMessages[step.currentStatus]}
+                </p>
+            );
+        }
 
-  // Upload and Mark as Picked from Customer
-  if (step.currentStatus === "Order Placed") {
-    buttonLabel = "Upload Live Photo and Mark as Ready for Pickup";
-    buttonStyle.backgroundColor = "#17A2B8";
-  } 
-  else if (step.nextStatus === "End of Route") {
-    buttonLabel = "Mark route as completed";
-    buttonStyle.backgroundColor = "#6C757D";
+        // Button configurations for dynamic actions
+        const buttonConfig = {
+            "Order Placed": {
+                label: "Upload Live Photo of Bar Code and Mark as Ready for Pickup",
+                style: { backgroundColor: "#17A2B8" },
+            },
+            "Driver En Route for Delivery": {
+                label: "Upload live photo before marking Order as Delivered",
+                style: { backgroundColor: "#28A745" },
+            },
+            "Ready for Delivery": {
+                label: "Upload Live Photo and Pick-up from Shop",
+                style: { backgroundColor: "#28A745" },
+            },
+            "Delivery Scheduled": {
+                label: "Pickup Delivery, Upload Live Photo and Mark as Driver En Route for Delivery",
+                style: { backgroundColor: "#28A745" },
+            },
+            "Pickup Scheduled": {
+                label: "Upload live photo before Order Pickup from Customer",
+                style: { backgroundColor: "#17A2B8" },
+            },
+            "Picked Up": {
+                label: "Upload live photo before dropping Order in Shop",
+                style: { backgroundColor: "#D22B2B" },
+            },
+            default: {
+                label: "Upload Live Photo and Pick-up from Customer",
+                style: { backgroundColor: "#007BFF" },
+            },
+        };
 
-      // Render the "Mark route as completed" button
-      return (
-          <div>
-              {selectedRoute && canCompleteRoute() && (
-                  <button
-                      onClick={() => completeRoute(selectedRoute.id)}
-                      style={{
-                          padding: "12px 20px",
-                          backgroundColor: "#28A745",
-                          color: "#fff",
-                          fontSize: "16px",
-                          border: "none",
-                          borderRadius: "5px",
-                          cursor: "pointer",
-                          marginTop: "20px",
-                      }}
-                  >
-                      Mark route as completed
-                  </button>
-              )}
-          </div>
-      );
-  } 
-  else if (step.currentStatus === "Driver En Route for Delivery") {
-    buttonLabel = "Upload live photo before marking Order as Delivered";
-    buttonStyle.backgroundColor = "#28A745";
-  } 
-  else if (step.currentStatus === "Ready for Delivery") {
-    buttonLabel = "Upload Live Photo and Pick-up from Shop";
-    buttonStyle.backgroundColor = "#28A745";
-  } 
-  else if (step.currentStatus === "Delivery Scheduled") {
-    buttonLabel = "Pickup Delivery, Upload Live Photo and Mark as Driver En Route for Pickup";
-    buttonStyle.backgroundColor = "#28A745";
-  }
-  else if (step.currentStatus === "Pickup Scheduled") {
-    buttonLabel = "Upload live photo before Order Pickup from Customer";
-    buttonStyle.backgroundColor = "#17A2B8";
-  } 
-  else if (step.currentStatus === "Picked Up") {
-    buttonLabel = "Upload live photo  before dropping Order in Shop";
-    buttonStyle.backgroundColor = "#D22B2B";
-  } 
-  else {
-    buttonLabel = "Upload Live Photo and Pick-up from Customer";
-    buttonStyle.backgroundColor = "#007BFF";
-  }
+        // Handle Collect Bags button
+        if (step.currentStatus === "Shop" && index === 1 && !step.bagsCollected) {
+            return (
+                <button
+                    style={{ ...styles.actionButton, backgroundColor: "#DC3545" }}
+                    onClick={() => handleCollectBags(step, index)}
+                    disabled={uploading}
+                >
+                    {uploading ? "Processing..." : "Collect Bags and Bar Codes from Shop"}
+                </button>
+            );
+        }
 
-  return (
-    <button
-      style={buttonStyle}
-      onClick={() => handleUploadAndAction(step, "ShopAction")}
-      disabled={uploading}
-    >
-      {uploading ? "Uploading..." : buttonLabel}
-    </button>
-  );
-};
+        // Determine button label and style from configuration
+        const { label, style } = buttonConfig[step.currentStatus] || buttonConfig.default;
+
+        // Render the completion button for "End of Route"
+        if (step.nextStatus === "End of Route") {
+            return (
+                <div>
+                    {selectedRoute && canCompleteRoute() && (
+                        <button
+                            onClick={() => completeRoute(selectedRoute.id)}
+                            style={{
+                                padding: "12px 20px",
+                                backgroundColor: "#28A745",
+                                color: "#fff",
+                                fontSize: "16px",
+                                border: "none",
+                                borderRadius: "5px",
+                                cursor: "pointer",
+                                marginTop: "20px",
+                            }}
+                        >
+                            Mark route as completed
+                        </button>
+                    )}
+                </div>
+            );
+        }
+
+        return (
+            <button
+                style={{ ...styles.actionButton, ...style }}
+                onClick={() => handleUploadAndAction(step, "ShopAction")}
+                disabled={uploading}
+            >
+                {uploading ? "Uploading..." : label}
+            </button>
+        );
+    };
+
+
 
     return (
         <div style={styles.container}>

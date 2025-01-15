@@ -124,7 +124,7 @@ const Dashboard = () => {
             .getUserMedia({ video: true })
             .then((stream) => {
                 if (!videoRef.current) {
-                    toast.error("Video element is unavailable.");
+                    //toast.error("Video element is unavailable.");
                     return;
                 }
                 videoRef.current.srcObject = stream;
@@ -138,7 +138,7 @@ const Dashboard = () => {
         // Store step and action for later use, validate step structure
         if (!step || (!step.order_code && !step.id && !step.order_id)) {
             console.error("Invalid step object passed to openCamera:", step);
-            toast.error("Step information is missing. Cannot proceed.");
+            //toast.error("Step information is missing. Cannot proceed.");
             return;
         }
 
@@ -212,6 +212,21 @@ const Dashboard = () => {
             formData.append("route_id", selectedRoute?.id);
             formData.append("action", action);
 
+            if (photo?.bagCount) {
+                formData.append("bag_count", photo.bagCount); // Attach bag count if available
+            }
+
+            if (photo?.hangersCount) {
+                formData.append("hangers_count", photo.hangersCount);
+            }
+
+            // Include current status
+            if (step?.currentStatus) {
+                formData.append("current_status", step.currentStatus);
+            }
+
+
+
             const response = await axios.post(
                 `${API_BASE_URL}/driver/orders/${orderId}/upload-photo`,
                 formData,
@@ -226,7 +241,8 @@ const Dashboard = () => {
             if (response?.data?.message === "Photo uploaded successfully") {
                 toast.success("Photo uploaded successfully!");
                 fetchRoutes();
-                setPhoto(null);
+                // Close the camera
+                setIsCameraOpen(false);
             } else {
                 toast.error("Failed to upload photo.");
                 console.error("Photo upload failed:", response.data);
@@ -239,10 +255,85 @@ const Dashboard = () => {
         }
     };
 
+    // Function to handle camera logic with bag count
+    const openCameraWithBagCount = (step, action, bagCount) => {
+        console.log(`Opening camera for step: ${step.id}, Bag Count: ${bagCount}`);
+        setPhoto({ step, action, bagCount }); // Attach bag count to the photo object
+        setIsCameraOpen(true);
+    };
 
+    const openCameraWithBagAndHangerCount = (step, action, bagCount, hangersCount) => {
+        console.log(
+            `Opening camera for step: ${step.id}, Bag Count: ${bagCount}, Hangers Count: ${hangersCount}`
+        );
+        setPhoto({ step, action, bagCount, hangersCount }); // Attach counts to the photo object
+        setIsCameraOpen(true);
+    };
+
+    // Helper function to prompt for bag and hanger count
+    const promptBagAndHangerCount = () => {
+        return new Promise((resolve) => {
+            const bagCount = prompt("Enter the number of bags collected:");
+            const hangersCount = prompt("Enter the number of hangers collected:");
+
+            if (
+                bagCount !== null &&
+                hangersCount !== null &&
+                !isNaN(bagCount) &&
+                !isNaN(hangersCount) &&
+                Number(bagCount) > 0 &&
+                Number(hangersCount) > 0
+            ) {
+                resolve({ bagCount: Number(bagCount), hangersCount: Number(hangersCount) });
+            } else {
+                resolve(null);
+            }
+        });
+    };
+
+    // Helper function to prompt for bag count
+    const promptBagCount = () => {
+        return new Promise((resolve) => {
+            const bagCount = prompt("Enter the number of bags collected:");
+            if (bagCount !== null && !isNaN(bagCount) && Number(bagCount) > 0) {
+                resolve(Number(bagCount));
+            } else {
+                resolve(null);
+            }
+        });
+    };
 
 // Upload Photo for Pickup or Delivery
     const handleUploadAndAction = async (step, action) => {
+
+        if (step.currentStatus === "Delivery Scheduled") {
+            // Ask for bag and hanger counts
+            const counts = await promptBagAndHangerCount();
+            if (!counts) {
+                toast.error("Bag and hanger count are required to proceed.");
+                return;
+            }
+
+            // Pass counts when opening the camera
+            openCameraWithBagAndHangerCount(step, action, counts.bagCount, counts.hangersCount);
+            return;
+        }
+
+        // Check for bag collection if the current status is "Pickup Scheduled"
+        if (step.currentStatus === "Pickup Scheduled") {
+            // Ask for the number of bags
+            const bagCount = await promptBagCount();
+            if (bagCount === null) {
+                toast.error("Bag count is required to proceed.");
+                return;
+            }
+
+            // Pass the bag count when opening the camera
+            openCameraWithBagCount(step, action, bagCount);
+            return;
+        }
+
+
         if (
             step.currentStatus === "Delivery Scheduled" ||
             step.currentStatus === "Driver En Route for Delivery" ||
@@ -545,8 +636,10 @@ const Dashboard = () => {
             {isCameraOpen && (
                 <CameraComponent
                     step={photo?.step || null}
-          action={photo?.action || null}
-          onPhotoCaptured={handlePhotoCaptured}
+                    action={photo?.action || null}
+                    bagCount={photo?.bagCount || 0} // Pass bag count to the CameraComponent
+                    onPhotoCaptured={handlePhotoCaptured}
+
                 />
             )}
 

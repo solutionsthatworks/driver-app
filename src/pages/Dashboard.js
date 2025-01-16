@@ -240,9 +240,18 @@ const Dashboard = () => {
 
             if (response?.data?.message === "Photo uploaded successfully") {
                 toast.success("Photo uploaded successfully!");
+
+
                 fetchRoutes();
+
+                // Close the camera
+                if (videoRef.current?.srcObject) {
+                    videoRef.current.srcObject.getTracks().forEach((track) => track.stop());
+                }
                 // Close the camera
                 setIsCameraOpen(false);
+                setPhoto(null);
+
             } else {
                 toast.error("Failed to upload photo.");
                 console.error("Photo upload failed:", response.data);
